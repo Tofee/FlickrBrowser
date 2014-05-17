@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtWebKit 3.0
 import "OAuthCore.js" as OAuth
+import "FlickrAPI.js" as FlickrAPI
 import "DBAccess.js" as DBAccess
 
 Item {
@@ -9,17 +10,38 @@ Item {
     property string title : qsTr("Authorisation For Flickr")
 
     Component.onCompleted: {
-        var tmp = DBAccess.checkToken();
-        if( tmp && tmp.token && tmp.secret ) {
-            console.log("Token already existing.");
-            authorised(tmp);
-        }
-        else {
-            getFlickrRequestToken();
-        }
+        DBAccess.checkToken(function (tmp) {
+            if( tmp && tmp.token ) {
+                console.log("Token already existing. Checking token...");
+                checkFlickrToken(tmp.token);
+            }
+            else {
+                console.log("No token found. Requesting new token.");
+                dialog.state = "needNewToken";
+            }
+        });
     }
-    signal authorised(variant credentials)
-    signal close
+
+    signal authorised
+
+    states: [
+        State {
+            name: "needNewToken"
+            StateChangeScript {
+                script: {
+                    getFlickrRequestToken();
+                }
+            }
+        },
+        State {
+            name: "authorized"
+            StateChangeScript {
+                script: {
+                    dialog.authorised();
+                }
+            }
+        }
+    ]
 
     Text {
         id: titleText
@@ -40,8 +62,8 @@ Item {
         WebView {
             id: webView
 
-            width: 1024
-            height: 1024
+            width: 800
+            height: 1280
 
             opacity:(webView.progress < 1) ? 0 : 1
             onUrlChanged: {
@@ -73,10 +95,6 @@ Item {
     property string _flickrRequestSecret
 
     function checkUrlForToken() {
-        checkFlickrToken();
-    }
-
-    function checkFlickrToken() {
         var url = webView.url.toString();
         if (/oauth_verifier=/.test(url)) {
             var flickrVerifier = url.split("=")[2].split("&")[0];
@@ -87,6 +105,22 @@ Item {
             messages.displayMessage(qsTr("Error obtaining flickr authorisation"));
         }
     }
+
+    function checkFlickrToken(token) {
+        FlickrAPI.callFlickrMethod("flickr.auth.oauth.checkToken", null,
+                                   function (response) {
+                                       if( response.stat && response.stat === "ok" ) {
+                                           console.log("Token valid.");
+                                           dialog.state = "authorized";
+                                       }
+                                       else {
+                                           console.log("Token not valid. Requesting new token.");
+                                           dialog.state = "needNewToken";
+                                       }
+                                    });
+    }
+
+
 
     function getFlickrRequestToken() {
         //busyDialog.show = true;
@@ -127,7 +161,7 @@ Item {
                     var token = tSplit[1].split('=')[1];
                     var secret = tSplit[2].split('=')[1];
                     DBAccess.saveToken(token, secret);
-                    authorised({ "token": token, "secret": secret });
+                    dialog.state = "authorized";
                 }
                 else {
                     messages.displayMessage(qsTr("Unable to obtain twitter access token"));

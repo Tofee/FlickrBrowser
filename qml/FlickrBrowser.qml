@@ -1,6 +1,8 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.1
 import "OAuthCore.js" as OAuth
 import "DBAccess.js" as DBAccess
+import "FlickrAPI.js" as FlickrAPI
 
 Item {
     id: root
@@ -8,64 +10,66 @@ Item {
     width: 360
     height: 360
 
-    QtObject {
-        id: sessionProperties
-
-        property variant credentials;
+    ListModel {
+        id: rootCollectionTreeModel
+    }
+    ListModel {
+        id: rootPhotosetListModel
     }
 
-    OAuthDialog {
-        id: flickrOAuthDialog
+    // Navigation pane
+    Text {
+        id: locationPane
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-        anchors.fill: parent;
-        visible: true
-        onAuthorised: {
-            root.state = "Authorized";
-            sessionProperties.credentials = credentials;
-            var response = callFlickrMethod("flickr.photosets.getList", null, cb);
-        }
+        text: stackView.currentItem.pagePath ? stackView.currentItem.pagePath : ""
 
-        function cb(response) {
-            console.log(response);
+        MouseArea {
+            anchors.fill: parent
+            enabled: stackView.depth > 2;
+            onClicked: stackView.pop()
         }
     }
 
-    states: [
-        State {
-            name: "Login"
-        },
-        State {
-            name: "Authorized"
+    // Main collection view
+    StackView {
+        id: stackView
+        anchors.top: locationPane.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
 
-            PropertyChanges {
-                target: flickrOAuthDialog
-                visible: false
+        initialItem: LoginPage {
+            width: parent.width
+            height: parent.height
+
+            onAuthorised: {
+                root.state = "Authorized";
+                FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, cb_collectionlist);
+                FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq" ] ], cb_photosetlist);
+            }
+
+            function cb_collectionlist(response) {
+                //console.log(JSON.stringify(response));
+                var i;
+                for( i=0; i<response.collections.collection.length; i++ ) {
+                    rootCollectionTreeModel.append(response.collections.collection[i]);
+                }
+
+                stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
+                                properties: {"collectionTreeModel": rootCollectionTreeModel, "photoSetListModel": rootPhotosetListModel}});
+            }
+
+            function cb_photosetlist(response) {
+                //console.log(JSON.stringify(response));
+                var i;
+                for( i=0; i<response.photosets.photoset.length; i++ ) {
+                    rootPhotosetListModel.append(response.photosets.photoset[i]);
+                }
             }
         }
-    ]
-
-    function callFlickrMethod(method, args, callback) {
-        var doc = new XMLHttpRequest();
-        doc.onreadystatechange = function() {
-            if (doc.readyState === XMLHttpRequest.DONE) {
-                if( callback )
-                    callback(JSON.parse(doc.responseText));
-            }
-        }
-        var parameters = new Array();
-        parameters.push( ["nojsoncallback", 1] );
-        parameters.push( ["format", "json"] );
-        parameters.push( ["method", method] );
-        if( args )
-            parameters.concat(args);
-        var oauthData = OAuth.createOAuthHeader("flickr", "GET", "https://api.flickr.com/services/rest/", sessionProperties.credentials, null, parameters);
-        doc.open("GET", oauthData.url);
-        doc.setRequestHeader("Authorization", oauthData.header);
-        doc.send();
-    }
-
-    Component.onCompleted: {
-        state: "Login";
     }
 }
 
