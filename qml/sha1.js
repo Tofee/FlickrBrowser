@@ -189,13 +189,24 @@ function binb2b64(binarray)
   var str = "";
   for(var i = 0; i < binarray.length * 4; i += 3)
   {
-    var triplet = (((binarray[i   >> 2] >> 8 * (3 -  i   %4)) & 0xFF) << 16)
-                | (((binarray[i+1 >> 2] >> 8 * (3 - (i+1)%4)) & 0xFF) << 8 )
-                |  ((binarray[i+2 >> 2] >> 8 * (3 - (i+2)%4)) & 0xFF);
+    var bitShift0 = (8 * (3 -  i   %4));
+    var bitShift1 = (8 * (3 - (i+1)%4));
+    var bitShift2 = (8 * (3 - (i+2)%4));
+    var bitShiftEval = bitShift0 + bitShift1 + bitShift2; // force evaluation of 'bitShift{0,1,2}'
+
+    var triplet = (((binarray[i   >> 2] >> bitShift0) & 0xFF) << 16)
+                | (((binarray[i+1 >> 2] >> bitShift1) & 0xFF) << 8 )
+                |  ((binarray[i+2 >> 2] >> bitShift2) & 0xFF);
+
     for(var j = 0; j < 4; j++)
     {
       if(i * 8 + j * 6 > binarray.length * 32) str += b64pad;
-      else str += tab.charAt((triplet >> 6*(3-j)) & 0x3F);
+      else {
+          var shifting = 6*(3-j);
+          var shiftingEval = shifting; // force evaluation of 'shifting'
+          var charPos = (triplet >> shifting) & 0x3F;
+          str += tab.charAt(charPos);
+      }
     }
   }
   return str;

@@ -8,7 +8,6 @@ function callFlickrMethod(method, args, callback) {
     doc.onreadystatechange = function() {
         if (doc.readyState === XMLHttpRequest.DONE) {
             if( callback ) {
-                console.log("doc.responseText=" + doc.responseText);
                 var responseJSON = {};
                 if( doc.responseText.length>0 && doc.responseText[0] === '{' )
                     responseJSON = JSON.parse(doc.responseText);
