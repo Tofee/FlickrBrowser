@@ -9,68 +9,85 @@ Item {
 
     property string pagePath: "/"
 
-    GridView {
-        id: collectionsGridView
-
-        cellWidth: 150
-        cellHeight: 150
-
+    Flickable {
         anchors.fill: parent
-        model: collectionTreeModel
+        contentWidth: parent.width
+        contentHeight: collectionsGridView.height
+        clip: true
+        flickableDirection: Flickable.VerticalFlick
 
-        delegate:
-            Item {
-                function getCollectionTitle() {
-                    // We have to be careful here:
-                    // the "collection" property could very well not
-                    // exist at all in the model, and therefore
-                    // not being defined as an attached property
-                    // in the current context
-                    var myModelItem = collectionTreeModel.get(index)
-                    if( myModelItem.collection ) {
-                        return title + "(" + myModelItem.collection.count + ")"
-                    }
-                    else if( myModelItem.set ) {
-                        return title + "(" + myModelItem.set.count + ")"
-                    }
+        Flow {
+            id: collectionsGridView
 
-                    return title + "(0)"
-                }
+            x: 0; y: 0
+            width: collectionGridPage.width
 
-                Column {
-                    id: collectionCell
-                    width: collectionsGridView.cellWidth
-                    Image {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+            Repeater {
+                model: collectionTreeModel
+                delegate:
+                    Item {
+                        height: collectionCell.height
+                        width: collectionCell.width
 
-                        fillMode: Image.PreserveAspectFit
-                        source: iconlarge[0] == '/' ? Qt.resolvedUrl("images/collection_default_l.gif") : iconlarge
-                    }
-                    Text {
-                        id: collectionTitle
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        function getCollectionTitle() {
+                            // We have to be careful here:
+                            // the "collection" property could very well not
+                            // exist at all in the model, and therefore
+                            // not being defined as an attached property
+                            // in the current context
+                            var myModelItem = collectionTreeModel.get(index)
+                            if( myModelItem.collection ) {
+                                return title + "(" + myModelItem.collection.count + ")"
+                            }
+                            else if( myModelItem.set ) {
+                                return title + "(" + myModelItem.set.count + ")"
+                            }
 
-                        text: getCollectionTitle()
-                    }
-                }
-                MouseArea {
-                    anchors.fill: collectionCell
-                    onClicked: {
-                        var stackView = collectionGridPage.Stack.view;
-                        var myModelItem = collectionTreeModel.get(index)
-
-                        if( myModelItem.collection ) {
-                            stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                            properties: {"collectionTreeModel": myModelItem.collection, "pagePath": pagePath + "/" + title, "photoSetListModel": photoSetListModel}});
+                            return title + "(0)"
                         }
-                        else if( myModelItem.set ) {
-                            stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                            properties: {"collectionTreeModel": myModelItem.set, "pagePath": pagePath + "/" + title, "photoSetListModel": photoSetListModel}});
+
+                        Column {
+                            id: collectionCell
+                            width: collectionImage.width
+
+                            Image {
+                                id: collectionImage
+                                height: 150
+                                width: 150
+
+                                fillMode: Image.PreserveAspectFit
+                                source: iconlarge[0] == '/' ? Qt.resolvedUrl("images/collection_default_l.gif") : iconlarge
+
+                                onWidthChanged: console.log("width image = " + collectionImage.width);
+                            }
+                            Text {
+                                id: collectionTitle
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
+                                text: getCollectionTitle()
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: collectionCell
+                            onClicked: {
+                                var stackView = collectionGridPage.Stack.view;
+                                var myModelItem = collectionTreeModel.get(index)
+
+                                if( myModelItem.collection ) {
+                                    stackView.navigationPath.push(title);
+                                    stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
+                                                    properties: {"collectionTreeModel": myModelItem.collection, "photoSetListModel": photoSetListModel}});
+                                }
+                                else if( myModelItem.set ) {
+                                    stackView.navigationPath.push(title);
+                                    stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
+                                                    properties: {"collectionTreeModel": myModelItem.set, "photoSetListModel": photoSetListModel}});
+                                }
+                            }
                         }
                     }
-                }
             }
+        }
     }
 }

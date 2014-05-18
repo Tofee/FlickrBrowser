@@ -5,7 +5,7 @@ import "DBAccess.js" as DBAccess
 import "FlickrAPI.js" as FlickrAPI
 
 Item {
-    id: root
+    id: flickrBrowserRoot
 
     width: 360
     height: 360
@@ -18,35 +18,33 @@ Item {
     }
 
     // Navigation pane
-    Text {
-        id: locationPane
+    NavigationPath {
+        id: navigationPathItem
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
 
-        text: stackView.currentItem.pagePath ? stackView.currentItem.pagePath : ""
-
-        MouseArea {
-            anchors.fill: parent
-            enabled: stackView.depth > 2;
-            onClicked: stackView.pop()
+        onElementClicked: {
+                navigationPathItem.pop();
+                stackView.pop();
         }
     }
 
     // Main collection view
     StackView {
         id: stackView
-        anchors.top: locationPane.bottom
+        anchors.top: navigationPath.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+
+        property NavigationPath navigationPath: navigationPathItem
 
         initialItem: LoginPage {
             width: parent.width
             height: parent.height
 
             onAuthorised: {
-                root.state = "Authorized";
                 FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, cb_collectionlist);
                 FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq" ] ], cb_photosetlist);
             }

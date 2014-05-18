@@ -1,82 +1,106 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-Item {
-    id: collectionGridPage
+import "FlickrAPI.js" as FlickrAPI
 
-    property string photosetId;
-    property ListModel photosetModel;
+Item {
+    id: photosetGridPage
 
     property string pagePath: "/"
 
+    property string photosetId;
+
+    ListModel {
+        id: photosetModel;
+    }
+
     Component.onCompleted: {
         // Query Flickr to retrieve the list of the photos
-        FlickrAPI.callFlickrMethod("flickr.photosets.getInfo", null, function(response) {
-            if(response && response.photoset)
+        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", photosetId ], [ "extras", "url_s, url_t" ] ], function(response) {
+            if(response && response.photoset && response.photoset.photo)
             {
-                console.log(JSON.stringify(response.photoset));
+                var i;
+                for( i=0; i<response.photoset.photo.length; i++ ) {
+                    photosetModel.append(response.photoset.photo[i]);
+                }
             }
         });
     }
 
-    GridView {
-        id: collectionsGridView
-
+    Flickable {
         anchors.fill: parent
-        model: collectionTreeModel
+        contentWidth: parent.width
+        contentHeight: photosGridView.height
+        clip: true
+        flickableDirection: Flickable.VerticalFlick
 
-        delegate:
-            Item {
-                function getCollectionTitle() {
-                    // We have to be careful here:
-                    // the "collection" property could very well not
-                    // exist at all in the model, and therefore
-                    // not being defined as an attached property
-                    // in the current context
-                    var myModelItem = collectionTreeModel.get(index)
-                    if( myModelItem.collection ) {
-                        return title + "(" + myModelItem.collection.count + ")"
-                    }
-                    else if( myModelItem.set ) {
-                        return title + "(" + myModelItem.set.count + ")"
-                    }
+        Flow {
+            id: photosGridView
 
-                    return title + "(0)"
-                }
+            x: 0; y: 0
+            width: photosetGridPage.width
 
-                Column {
-                    id: collectionCell
-                    width: collectionsGridView.cellWidth
-                    Image {
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+            Repeater {
+                model: photosetModel
 
-                        fillMode: Image.PreserveAspectFit
-                        source: iconlarge[0] == '/' ? Qt.resolvedUrl("images/collection_default_l.gif") : iconlarge
-                    }
-                    Text {
-                        id: collectionTitle
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                delegate:
+                    Item {
+                        id: photoCell
+                        width: photoImage.width
+                        height: photoImage.height
 
-                        text: getCollectionTitle()
-                    }
-                }
-                MouseArea {
-                    anchors.fill: collectionCell
-                    onClicked: {
-                        var stackView = collectionGridPage.Stack.view;
-                        var myModelItem = collectionTreeModel.get(index)
-                        if( myModelItem.collection ) {
-                            stackView.push({item: Qt.resolvedUrl("CollectionGridPage.qml"),
-                                            properties: {"collectionTreeModel": collection, "pagePath": pagePath + "/" + title}});
+                        Image {
+                            id: photoImage
+                            height: height_s
+                            width: width_s
+
+                            fillMode: Image.PreserveAspectFit
+                            source: url_s
                         }
-                        else if( myModelItem.set ) {
-                            stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
-                                            properties: {"photosetModel": set, "pagePath": pagePath + "/" + title}});
+                        Item {
+                            // show title at the bottom of the image, on mouse over
+                            anchors.left: photoImage.left
+                            anchors.right: photoImage.right
+                            anchors.bottom: photoImage.bottom
+                            height: collectionTitle.height * 1.1
+
+                            opacity:photoCellMouseArea.containsMouse ? 1.0: 0
+                            Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                            Rectangle {
+                                anchors.fill: parent
+                                color: "black"
+                                opacity: 0.8
+                            }
+                            Text {
+                                id: collectionTitle
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+
+                                color: "white"
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                                wrapMode: Text.Wrap
+
+                                text: title
+                            }
+                        }
+                        MouseArea {
+                            id: photoCellMouseArea
+                            anchors.fill: photoCell
+
+                            hoverEnabled: true
+
+                            onClicked: {
+                                // show full screen photo
+                                var stackView = collectionGridPage.Stack.view;
+                                stackView.navigationPath.push(title);
+                                stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
+                                                properties: {"photoId": id}});
+                            }
                         }
                     }
-                }
             }
+        }
     }
 }
