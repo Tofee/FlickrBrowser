@@ -98,7 +98,6 @@ Item {
         var url = webView.url.toString();
         if (/oauth_verifier=/.test(url)) {
             var flickrVerifier = url.split("=")[2].split("&")[0];
-            console.log(flickrVerifier)
             getFlickrAccessToken(flickrVerifier); // authorization agreement detected, exchange the request token against an access token
         }
         else if (/error/.test(url)) {
@@ -155,7 +154,6 @@ Item {
         doc.onreadystatechange = function() {
             if (doc.readyState === XMLHttpRequest.DONE) {
                 var response = doc.responseText;
-                //                console.log(response)
                 if (/oauth_token/i.test(response)) {
                     var tSplit = response.split('&');
                     var token = tSplit[1].split('=')[1];
