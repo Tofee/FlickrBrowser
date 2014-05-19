@@ -17,6 +17,12 @@ Item {
         id: rootPhotosetListModel
     }
 
+    Rectangle {
+        id: bg
+        anchors.fill: parent
+        color: "black"
+    }
+
     // Navigation pane
     NavigationPath {
         id: navigationPathItem

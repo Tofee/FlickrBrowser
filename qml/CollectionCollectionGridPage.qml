@@ -65,6 +65,8 @@ Item {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
 
+                                color: "white"
+
                                 text: getCollectionTitle()
                             }
                         }
