@@ -10,6 +10,8 @@ Item {
 
     property string photosetId;
 
+    property real spacing : 5;
+
     ListModel {
         id: photosetModel;
     }
@@ -21,10 +23,44 @@ Item {
             {
                 var i;
                 for( i=0; i<response.photoset.photo.length; i++ ) {
-                    photosetModel.append(response.photoset.photo[i]);
+                    var currentPhoto = response.photoset.photo[i];
+                    currentPhoto.scaling = 1.0;
+                    photosetModel.append(currentPhoto);
                 }
+
+                doJustifyFlow();
             }
         });
+    }
+
+    onWidthChanged: doJustifyFlow();
+
+    function doJustifyFlow() {
+        // recompute the preferred scaling of each photo
+        var idx_endLine = 0, idx_startLine = 0;
+        var maxWidth = photosetGridPage.width;
+        var wantedHeight = 320;
+        var currentWidth=0;
+        for(idx_endLine=0; idx_endLine<photosetModel.count; idx_endLine++) {
+            var currentPhoto = photosetModel.get(idx_endLine);
+            var currentHeightScaling = wantedHeight / currentPhoto.height_s;
+            currentWidth += photosetGridPage.spacing*2 + currentPhoto.width_s * currentHeightScaling;
+            if( currentWidth > maxWidth ) {
+                // now, change the scaling of these photos to make them fit nicely on the line
+                var widthScaling = maxWidth/currentWidth;
+
+                // change the scaling
+                var j;
+                for( j=idx_startLine; j<=idx_endLine; j++ ) {
+                    photosetModel.get(j).scaling=widthScaling * (wantedHeight / photosetModel.get(j).height_s);
+                }
+
+                // reset counters
+                currentWidth = 0;
+                idx_startLine = idx_endLine+1;
+                wantedHeight = 300 + 40*Math.random(); // a bit at random
+            }
+        }
     }
 
     Flickable {
@@ -39,6 +75,7 @@ Item {
 
             x: 0; y: 0
             width: photosetGridPage.width
+            spacing: photosetGridPage.spacing
 
             Repeater {
                 model: photosetModel
@@ -51,8 +88,8 @@ Item {
 
                         Image {
                             id: photoImage
-                            height: height_s
-                            width: width_s
+                            height: height_s * scaling
+                            width: width_s * scaling
 
                             fillMode: Image.PreserveAspectFit
                             source: url_s
