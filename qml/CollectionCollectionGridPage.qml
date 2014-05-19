@@ -7,8 +7,6 @@ Item {
     property ListModel collectionTreeModel;
     property ListModel photoSetListModel;
 
-    property string pagePath: "/"
-
     Flickable {
         anchors.fill: parent
         contentWidth: parent.width

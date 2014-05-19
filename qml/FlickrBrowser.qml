@@ -10,45 +10,64 @@ Item {
     width: 360
     height: 360
 
+    property alias rootCollectionTreeModel: rootCollectionTreeModel
+    property alias rootPhotosetListModel: rootPhotosetListModel
+
     ListModel {
         id: rootCollectionTreeModel
     }
     ListModel {
         id: rootPhotosetListModel
     }
+/*
+    HoverMenu {
+        id: bottomHoverMenu
 
-    Rectangle {
-        id: bg
-        anchors.fill: parent
-        color: "black"
-    }
-
-    // Navigation pane
-    NavigationPath {
-        id: navigationPathItem
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
 
-        onElementClicked: {
-                navigationPathItem.pop();
-                stackView.pop();
+        minimunHeight: 10
+        maximunHeight: 50
+
+        Rectangle {
+            anchors.fill: parent
+            color: "grey"
+            opacity: 0.2
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    stackView.navigationPath.push("Photosets (all)");
+                    stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
+                                    properties: {"photoSetListModel": rootPhotosetListModel}});
+                }
+            }
         }
     }
+*/
 
-    // Main collection view
-    StackView {
-        id: stackView
-        anchors.top: navigationPath.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        property NavigationPath navigationPath: navigationPathItem
-
-        initialItem: LoginPage {
-            width: parent.width
-            height: parent.height
+    // collection view
+    Component {
+        id: collectionsBrowserComp
+        CollectionsBrowser {
+            rootCollectionTreeModel: flickrBrowserRoot.rootCollectionTreeModel
+            rootPhotosetListModel: flickrBrowserRoot.rootPhotosetListModel
+        }
+    }
+    // photoset view
+    Component {
+        id: photosetsBrowserComp
+        PhotosetsBrowser {
+            rootPhotosetListModel: flickrBrowserRoot.rootPhotosetListModel
+        }
+    }
+    // login page
+    Component {
+        id: loginPageComp
+        LoginPage {
+            property int remainingCounter: 2
+            onRemainingCounterChanged: if( remainingCounter === 0 ) flickrBrowserRoot.state = "logged";
 
             onAuthorised: {
                 FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, cb_collectionlist);
@@ -62,8 +81,7 @@ Item {
                     rootCollectionTreeModel.append(response.collections.collection[i]);
                 }
 
-                stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                properties: {"collectionTreeModel": rootCollectionTreeModel, "photoSetListModel": rootPhotosetListModel}});
+                remainingCounter--;
             }
 
             function cb_photosetlist(response) {
@@ -72,8 +90,45 @@ Item {
                 for( i=0; i<response.photosets.photoset.length; i++ ) {
                     rootPhotosetListModel.append(response.photosets.photoset[i]);
                 }
+
+                remainingCounter--;
             }
         }
+    }
+    // root tab view
+    Component {
+        id: tabViewComp
+        TabView {
+            id: rootTabView
+            Component.onCompleted: {
+                rootTabView.addTab("C", collectionsBrowserComp);
+                rootTabView.addTab("P", photosetsBrowserComp);
+            }
+        }
+    }
+
+    states: [
+        State {
+            name: "login"
+            PropertyChanges { target: loginLoader; sourceComponent: loginPageComp }
+        },
+        State {
+            name: "logged"
+            PropertyChanges { target: loginLoader; sourceComponent: tabViewComp }
+        }
+    ]
+
+    Component.onCompleted: state = "login";
+
+    Rectangle {
+        id: bg
+        anchors.fill: parent
+        color: "black"
+    }
+
+    Loader {
+        id: loginLoader
+        anchors.fill: parent
     }
 }
 

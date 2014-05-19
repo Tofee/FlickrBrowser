@@ -4,10 +4,8 @@ import QtQuick.Controls 1.1
 Item {
     id: collectionGridPage
 
-    property ListModel collectionTreeModel;
+    property ListModel collectionTreeModel: photoSetListModel; // by default, show all the photosets
     property ListModel photoSetListModel;
-
-    property string pagePath: "/"
 
     Flickable {
         anchors.fill: parent
@@ -35,7 +33,7 @@ Item {
                             for( i = 0; i <= photoSetListModel.count; i++ ) {
                                 var photoSetInfo = photoSetListModel.get(i);
                                 if( photoSetInfo && photoSetInfo.id === id ) {
-                                    return title + "(" + String(parseInt(photoSetInfo.photos)+parseInt(photoSetInfo.videos)) + ")";
+                                    return photoSetInfo.title._content + "(" + String(parseInt(photoSetInfo.photos)+parseInt(photoSetInfo.videos)) + ")";
                                 }
                             }
                         }
@@ -79,7 +77,7 @@ Item {
                                 // We are opening a photoset album
                                 console.log("showing photoset id = " + id);
                                 var stackView = collectionGridPage.Stack.view;
-                                stackView.navigationPath.push(title);
+                                stackView.navigationPath.push(collectionTitle.text);
                                 stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
                                                 properties: {"photosetId": id}});
                             }

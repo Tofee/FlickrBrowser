@@ -6,8 +6,6 @@ import "FlickrAPI.js" as FlickrAPI
 Item {
     id: photosetGridPage
 
-    property string pagePath: "/"
-
     property string photosetId;
 
     property real spacing : 5;
@@ -18,7 +16,7 @@ Item {
 
     Component.onCompleted: {
         // Query Flickr to retrieve the list of the photos
-        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", photosetId ], [ "extras", "url_s, url_t" ] ], function(response) {
+        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", photosetId ], [ "extras", "url_s, url_o" ] ], function(response) {
             if(response && response.photoset && response.photoset.photo)
             {
                 var i;
@@ -130,10 +128,10 @@ Item {
 
                             onClicked: {
                                 // show full screen photo
-                                var stackView = collectionGridPage.Stack.view;
+                                var stackView = photosetGridPage.Stack.view;
                                 stackView.navigationPath.push(title);
                                 stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                                properties: {"photoId": id}});
+                                                properties: {"photoId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
                             }
                         }
                     }
