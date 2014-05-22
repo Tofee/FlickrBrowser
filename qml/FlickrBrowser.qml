@@ -1,24 +1,19 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
+
 import "OAuthCore.js" as OAuth
 import "DBAccess.js" as DBAccess
 import "FlickrAPI.js" as FlickrAPI
 
+import "Singletons"
+
 Item {
     id: flickrBrowserRoot
 
-    width: 360
-    height: 360
+    width: 700
+    height: 450
 
-    property alias rootCollectionTreeModel: rootCollectionTreeModel
-    property alias rootPhotosetListModel: rootPhotosetListModel
-
-    ListModel {
-        id: rootCollectionTreeModel
-    }
-    ListModel {
-        id: rootPhotosetListModel
-    }
 /*
     HoverMenu {
         id: bottomHoverMenu
@@ -47,27 +42,24 @@ Item {
     }
 */
 
-    // collection view
-    Component {
-        id: collectionsBrowserComp
-        CollectionsBrowser {
-            rootCollectionTreeModel: flickrBrowserRoot.rootCollectionTreeModel
-            rootPhotosetListModel: flickrBrowserRoot.rootPhotosetListModel
-        }
-    }
-    // photoset view
-    Component {
-        id: photosetsBrowserComp
-        PhotosetsBrowser {
-            rootPhotosetListModel: flickrBrowserRoot.rootPhotosetListModel
-        }
-    }
     // login page
     Component {
         id: loginPageComp
         LoginPage {
-            property int remainingCounter: 2
-            onRemainingCounterChanged: if( remainingCounter === 0 ) flickrBrowserRoot.state = "logged";
+            property bool collectionTreeRetrieved: false
+            property bool photosetListRetrieved: false
+
+            Connections {
+                target: FlickrBrowserApp
+                onCollectionTreeChanged: {
+                    collectionTreeRetrieved = true;
+                    if( collectionTreeRetrieved && photosetListRetrieved )flickrBrowserRoot.state = "logged";
+                }
+                onPhotosetListChanged: {
+                    photosetListRetrieved = true;
+                    if( collectionTreeRetrieved && photosetListRetrieved )flickrBrowserRoot.state = "logged";
+                }
+            }
 
             onAuthorised: {
                 FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, cb_collectionlist);
@@ -75,34 +67,45 @@ Item {
             }
 
             function cb_collectionlist(response) {
-                //console.log(JSON.stringify(response));
-                var i;
-                for( i=0; i<response.collections.collection.length; i++ ) {
-                    rootCollectionTreeModel.append(response.collections.collection[i]);
-                }
-
-                remainingCounter--;
+                FlickrBrowserApp.fillCollectionTreeModel(response.collections.collection);
             }
 
             function cb_photosetlist(response) {
-                //console.log(JSON.stringify(response));
-                var i;
-                for( i=0; i<response.photosets.photoset.length; i++ ) {
-                    rootPhotosetListModel.append(response.photosets.photoset[i]);
-                }
-
-                remainingCounter--;
+                FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
             }
         }
     }
-    // root tab view
+    // main view
     Component {
-        id: tabViewComp
-        TabView {
-            id: rootTabView
-            Component.onCompleted: {
-                rootTabView.addTab("C", collectionsBrowserComp);
-                rootTabView.addTab("P", photosetsBrowserComp);
+        id: rootViewComp
+        Item {
+            // Navigation pane
+            NavigationPath {
+                id: navigationPathItem
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                onElementClicked: {
+                        navigationPathItem.pop();
+                        stackView.pop();
+                }
+            }
+
+            // Stacked view
+            StackView {
+                id: stackView
+                anchors.top: navigationPath.bottom
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                property NavigationPath navigationPath: navigationPathItem
+
+                initialItem: MainPage {
+                    width: parent.width
+                    height: parent.height
+                }
             }
         }
     }
@@ -114,7 +117,7 @@ Item {
         },
         State {
             name: "logged"
-            PropertyChanges { target: loginLoader; sourceComponent: tabViewComp }
+            PropertyChanges { target: loginLoader; sourceComponent: rootViewComp }
         }
     ]
 

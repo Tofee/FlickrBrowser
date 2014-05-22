@@ -5,7 +5,6 @@ Item {
     id: collectionGridPage
 
     property ListModel collectionTreeModel;
-    property ListModel photoSetListModel;
 
     Flickable {
         anchors.fill: parent
@@ -77,12 +76,12 @@ Item {
                                 if( myModelItem.collection ) {
                                     stackView.navigationPath.push(title);
                                     stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                                    properties: {"collectionTreeModel": myModelItem.collection, "photoSetListModel": photoSetListModel}});
+                                                    properties: {"collectionTreeModel": myModelItem.collection}});
                                 }
                                 else if( myModelItem.set ) {
                                     stackView.navigationPath.push(title);
                                     stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                                    properties: {"collectionTreeModel": myModelItem.set, "photoSetListModel": photoSetListModel}});
+                                                    properties: {"collectionTreeModel": myModelItem.set}});
                                 }
                             }
                         }

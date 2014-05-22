@@ -1,11 +1,13 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
+import "Singletons"
+
 Item {
     id: collectionGridPage
 
-    property ListModel collectionTreeModel: photoSetListModel; // by default, show all the photosets
-    property ListModel photoSetListModel;
+    property ListModel collectionTreeModel: FlickrBrowserApp.photosetListModel; // by default, show all the photosets
+    property ListModel photoSetListModel: FlickrBrowserApp.photosetListModel
 
     Flickable {
         anchors.fill: parent
