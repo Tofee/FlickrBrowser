@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.1
 import QtWebKit 3.0
 import "OAuthCore.js" as OAuth
 import "FlickrAPI.js" as FlickrAPI
@@ -24,7 +25,12 @@ Item {
 
     signal authorised
 
+    state: "checkToken"
+
     states: [
+        State {
+            name: "checkToken"
+        },
         State {
             name: "needNewToken"
             StateChangeScript {
@@ -47,11 +53,18 @@ Item {
         id: titleText
 
         anchors { horizontalCenter: dialog.horizontalCenter; top: dialog.top; topMargin: 10 }
+        color: "white"
         text: title
     }
 
+    BusyIndicator {
+        anchors.centerIn: parent;
+        running: state !== "needNewToken"
+    }
     Flickable {
         id: webFlicker
+
+        visible: state === "needNewToken"
 
         anchors { fill: parent; topMargin: 50; leftMargin: 10; rightMargin: 10; bottomMargin: 10 }
         contentWidth: webView.width
@@ -74,20 +87,6 @@ Item {
             Behavior on opacity { PropertyAnimation { properties: "opacity"; duration: 500 } }
         }
     }
-/*
-    BusyDialog {
-        id: busyDialog
-
-        property bool show : false
-
-        anchors.centerIn: dialog
-        opacity: (busyDialog.show) || (webView.progress < 1) ? 1 : 0
-    }
-
-    CloseButton {
-        onButtonClicked: close()
-    }
-*/
 
     /* private section */
 
