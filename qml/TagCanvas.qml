@@ -22,18 +22,55 @@ Canvas {
 
         ctx.reset();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'blue';
         ctx.font = '20px sans-serif';
 
-        // Problem perfo here !!
+        var txtRealHeight = 24;
+
+        var transparentBlackColor = Qt.rgba(0,0.2,0,0.1);
+
+        // these two gradient do not depend on the text's width, so let's build them once for all
+        var gradTop = ctx.createLinearGradient(0,0,0,txtRealHeight/4); // top side
+        gradTop.addColorStop(0, transparentBlackColor);
+        gradTop.addColorStop(1, 'black');
+        var gradBottom = ctx.createLinearGradient(0,3*txtRealHeight/4,0,txtRealHeight); // bottom side
+        gradBottom.addColorStop(0, 'black');
+        gradBottom.addColorStop(1, transparentBlackColor);
+
+        // for each tag, write it on the canvas and take a screenshot
         var i;
         for( i = 0; i < tags.count; i++ ) {
-            // Project the point onto the canvas
-            ctx.fillText(tags.get(i).tag, 0, 20);
+            // Measure what width the text will be
             var textRect = ctx.measureText(tags.get(i).tag);
-            var canvasImageData = ctx.getImageData(0, 0, textRect.width, 30);
+
+            // Create a background rectangle, black with a gradiant for the alpha component
+
+            // fill in the center of the background with solid black
+            ctx.fillStyle = 'black'
+            ctx.fillRect(textRect.width/5,txtRealHeight/4,3*textRect.width/5,2*txtRealHeight/4);
+
+            // draw the contour of the background
+            var gradLeft = ctx.createLinearGradient(0,0,textRect.width/5,0); // left side
+            gradLeft.addColorStop(0, transparentBlackColor);
+            gradLeft.addColorStop(1, 'black');
+            var gradRight = ctx.createLinearGradient(4*textRect.width/5,0,textRect.width,0); // right side
+            gradRight.addColorStop(0, 'black');
+            gradRight.addColorStop(1, transparentBlackColor);
+
+            ctx.fillStyle = gradLeft
+            ctx.fillRect(0,                  0,                 textRect.width/5,   txtRealHeight);
+            ctx.fillStyle = gradRight
+            ctx.fillRect(4*textRect.width/5, 0,                 textRect.width/5,   txtRealHeight);
+            ctx.fillStyle = gradTop
+            ctx.fillRect(textRect.width/5,   0,                 3*textRect.width/5, txtRealHeight/4);
+            ctx.fillStyle = gradBottom
+            ctx.fillRect(textRect.width/5,   3*txtRealHeight/4, 3*textRect.width/5, txtRealHeight/4);
+
+            // Now write the text on top of that
+            ctx.fillStyle = 'blue';
+            ctx.fillText(tags.get(i).tag, 0, 20);
+            var canvasImageData = ctx.getImageData(0, 0, textRect.width, txtRealHeight);
             listTagImages.push(canvasImageData);
-            ctx.clearRect(0, 0, textRect.width, 30);
+            ctx.clearRect(0, 0, textRect.width, txtRealHeight);
         }
     }
 
