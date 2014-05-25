@@ -124,8 +124,8 @@ Item {
                     anchors.right: parent.right
 
                     onElementClicked: {
-                            navigationPathItem.pop();
-                            stackView.pop();
+                        navigationPathItem.pop(depth);
+                        stackView.pop(stackView.get(depth));
                     }
                 }
 
@@ -142,6 +142,16 @@ Item {
                     initialItem: MainPage {
                         width: parent.width
                         height: parent.height
+
+                        Component.onCompleted: navigationPathItem.push("Root");
+                    }
+
+                    onCurrentItemChanged: {
+                        if( currentItem && currentItem.pageModel )
+                            FlickrBrowserApp.currentShownModel = currentItem.pageModel;
+                        else
+                            FlickrBrowserApp.currentShownModel = null;
+                        FlickrBrowserApp.currentSelection.clear();
                     }
                 }
             }

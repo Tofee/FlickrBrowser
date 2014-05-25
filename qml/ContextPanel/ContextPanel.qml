@@ -43,23 +43,17 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
 
-            Rectangle {
+            FilterPanel {
                 visible: isFilterPanelActive
 
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: 100
-
-                color: "white"
             }
-            Rectangle {
+            PropertiesPanel {
                 visible: isPropertiesPanelActive
 
                 anchors.left: parent.left
                 anchors.right: parent.right
-                height: 50
-
-                color: "blue"
             }
             Rectangle {
                 visible: isEditionPanelActive

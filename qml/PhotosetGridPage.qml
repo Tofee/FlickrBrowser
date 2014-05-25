@@ -2,11 +2,15 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 
 import "Core/FlickrAPI.js" as FlickrAPI
+import "Singletons"
+import "Utils" as Utils
 
 Item {
     id: photosetGridPage
 
     property string photosetId;
+
+    property alias pageModel: photosetModel
 
     property real spacing : 5;
 
@@ -84,6 +88,16 @@ Item {
                         width: photoImage.width
                         height: photoImage.height
 
+                        Connections {
+                            target: FlickrBrowserApp.contextualFilter
+                            onFilterChanged: {
+                                photoCell.visible = FlickrBrowserApp.contextualFilter.matches({ "title": title });
+                            }
+                        }
+                        Component.onCompleted: {
+                            photoCell.visible = FlickrBrowserApp.contextualFilter.matches({ "title": title });
+                        }
+
                         Image {
                             id: photoImage
                             height: height_s * scaling
@@ -120,18 +134,27 @@ Item {
                                 text: title
                             }
                         }
-                        MouseArea {
+                        Utils.SingleDoubleClickMouseArea {
                             id: photoCellMouseArea
                             anchors.fill: photoCell
 
                             hoverEnabled: true
 
-                            onClicked: {
+                            onRealClicked: {
+                                if( !(mouse.modifiers & Qt.ControlModifier) )
+                                    FlickrBrowserApp.currentSelection.clear();
+                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id });
+                            }
+
+                            onRealDoubleClicked: {
                                 // show full screen photo
                                 var stackView = photosetGridPage.Stack.view;
                                 stackView.navigationPath.push(title);
                                 stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
                                                 properties: {"photoId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
+
+                                FlickrBrowserApp.currentSelection.clear();
+                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id });
                             }
                         }
                     }

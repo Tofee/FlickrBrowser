@@ -10,9 +10,11 @@ Item {
     function push(content) {
         navigationElements.append({"content": content});
     }
-    function pop() {
-        if( navigationElements.count > 0 )
+    function pop(downTo) {
+        if( null === downTo ) downTo = Math.max(0, navigationElements.count-1);
+        while(navigationElements.count-1 > downTo) {
             navigationElements.remove(navigationElements.count-1);
+        }
     }
 
     signal elementClicked(int depth);

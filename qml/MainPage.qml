@@ -6,6 +6,8 @@ import "Singletons"
 Item {
     id: mainPage
 
+    property alias pageModel: itemModel;
+
     VisualItemModel {
         id: itemModel
         Button {
@@ -15,7 +17,7 @@ Item {
                 var stackView = mainPage.Stack.view;
                 stackView.navigationPath.push(text);
                 stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                properties: { collectionTreeModel: FlickrBrowserApp.collectionTreeModel } });
+                                properties: { pageModel: FlickrBrowserApp.collectionTreeModel } });
             }
         }
         Button {
@@ -24,7 +26,8 @@ Item {
             onClicked: {
                 var stackView = mainPage.Stack.view;
                 stackView.navigationPath.push(text);
-                stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml")});
+                stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
+                                properties: { pageModel: FlickrBrowserApp.photosetListModel } });
             }
         }
         Button {

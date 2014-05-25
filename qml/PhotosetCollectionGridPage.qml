@@ -2,11 +2,12 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 
 import "Singletons"
+import "Utils" as Utils
 
 Item {
     id: collectionGridPage
 
-    property ListModel collectionTreeModel: FlickrBrowserApp.photosetListModel; // by default, show all the photosets
+    property ListModel pageModel
     property ListModel photoSetListModel: FlickrBrowserApp.photosetListModel
 
     Flickable {
@@ -23,11 +24,26 @@ Item {
             width: collectionGridPage.width
 
             Repeater {
-                model: collectionTreeModel
+                model: pageModel
                 delegate:
                     Item {
+                        id: delegateItem
+
                         height: collectionCell.height
                         width: collectionCell.width
+
+                        property string photosetTitle: getPhotosetTitle()
+                        property string photosetIcon: getPhotosetIcon()
+
+                        Connections {
+                            target: FlickrBrowserApp.contextualFilter
+                            onFilterChanged: {
+                                delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.photosetTitle });
+                            }
+                        }
+                        Component.onCompleted: {
+                            delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.photosetTitle });
+                        }
 
                         function getPhotosetTitle() {
                             // Find the size of that album
@@ -60,7 +76,7 @@ Item {
                                 width: 150
 
                                 fillMode: Image.PreserveAspectFit
-                                source: getPhotosetIcon()
+                                source: photosetIcon
                             }
                             Text {
                                 id: collectionTitle
@@ -69,13 +85,18 @@ Item {
 
                                 color: "white"
 
-                                text: getPhotosetTitle()
+                                text: photosetTitle
                                 wrapMode: Text.Wrap
                             }
                         }
-                        MouseArea {
+                        Utils.SingleDoubleClickMouseArea {
                             anchors.fill: collectionCell
-                            onClicked: {
+                            onRealClicked: {
+                                if( !(mouse.modifiers & Qt.ControlModifier) )
+                                    FlickrBrowserApp.currentSelection.clear();
+                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "set", "id": id });
+                            }
+                            onRealDoubleClicked: {
                                 // We are opening a photoset album
                                 console.log("showing photoset id = " + id);
                                 var stackView = collectionGridPage.Stack.view;
