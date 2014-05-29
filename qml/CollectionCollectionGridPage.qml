@@ -21,21 +21,22 @@ Item {
 
             x: 0; y: 0
             width: collectionGridPage.width
+            spacing: 3
 
             Repeater {
                 model: pageModel
                 delegate:
                     Utils.FlowListDelegate {
 
-                        icon: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
-                        title: getCollectionTitle();
+                        imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
+                        textContent: getCollectionTitle();
 
                         imageFillMode: Image.PreserveAspectFit
                         imageHeight: 150
                         imageWidth: 150
                         textPixelSize: 10
 
-                        selected: (pageModel.get(index).selected) ? true : false
+                        isSelected: (pageModel.get(index).selected) ? true : false
 
                         function getCollectionTitle() {
                             // We have to be careful here:
@@ -57,19 +58,19 @@ Item {
                         onClicked: {
                             if( !(mouse.modifiers & Qt.ControlModifier) )
                                 FlickrBrowserApp.currentSelection.clear();
-                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id });
+                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id, "object": pageModel.get(index) });
                         }
                         onDoubleClicked: {
                             var stackView = collectionGridPage.Stack.view;
                             var myModelItem = pageModel.get(index)
 
                             if( myModelItem.collection ) {
-                                stackView.navigationPath.push(title);
+                                stackView.navigationPath.push(myModelItem.title);
                                 stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
                                                 properties: {"pageModel": myModelItem.collection}});
                             }
                             else if( myModelItem.set ) {
-                                stackView.navigationPath.push(title);
+                                stackView.navigationPath.push(myModelItem.title);
                                 stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
                                                 properties: {"pageModel": myModelItem.set}});
                             }

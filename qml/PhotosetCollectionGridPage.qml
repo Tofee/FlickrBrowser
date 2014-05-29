@@ -36,6 +36,7 @@ Item {
 
             x: 0; y: 0
             width: collectionGridPage.width
+            spacing: 3
 
             Repeater {
                 model: smoothlyFilledModel
@@ -44,13 +45,13 @@ Item {
                         id: delegateItem
 
                         property variant photoSetInfos: getPhotosetInfos(id)
-                        icon: photoSetInfos ? photoSetInfos.primary_photo_extras.url_s : ""
-                        title: photoSetInfos ? photoSetInfos.title._content + "(" + String(parseInt(photoSetInfos.photos)+parseInt(photoSetInfos.videos)) + ")" : "Retrieving data...";
+                        imageSource: photoSetInfos ? photoSetInfos.primary_photo_extras.url_s : ""
+                        textContent: photoSetInfos ? photoSetInfos.title._content + "(" + String(parseInt(photoSetInfos.photos)+parseInt(photoSetInfos.videos)) + ")" : "Retrieving data...";
 
                         imageHeight: 180
                         imageWidth: 180
                         imageFillMode: Image.PreserveAspectCrop
-                        selected: (photoSetInfos && photoSetInfos.selected) ? true : false
+                        isSelected: (photoSetInfos && photoSetInfos.selected) ? true : false
                         textPixelSize: 14
 
                         function getPhotosetInfos(myId) {
@@ -74,7 +75,7 @@ Item {
                         onDoubleClicked: {
                             // We are opening a photoset album
                             var stackView = collectionGridPage.Stack.view;
-                            stackView.navigationPath.push(delegateItem.photosetTitle);
+                            stackView.navigationPath.push(delegateItem.textContent);
                             stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
                                             properties: {"photosetId": id}});
                         }

@@ -8,13 +8,18 @@ Item {
     height: delegateColumn.height
     width: delegateColumn.width
 
-    property bool selected
-    property string icon
-    property string title
+    property bool isSelected
+    property string imageSource
     property alias imageHeight: delegateImage.height
     property alias imageWidth: delegateImage.width
     property alias imageFillMode: delegateImage.fillMode
+
+    property alias showText: delegateText.visible
+    property string textContent
     property alias textPixelSize: delegateText.font.pixelSize
+
+    property alias hoverEnabled: collectionCellMouseArea.hoverEnabled
+    property alias containsMouse: collectionCellMouseArea.containsMouse
 
     signal clicked(variant mouse)
     signal doubleClicked(variant mouse)
@@ -39,7 +44,7 @@ Item {
             width: 180
 
             fillMode: Image.PreserveAspectCrop
-            source: icon
+            source: imageSource
 
             Rectangle {
                 id: selectionRect
@@ -47,7 +52,7 @@ Item {
                 opacity: 0.3
                 color: "blue"
 
-                visible: delegateItem.selected
+                visible: delegateItem.isSelected
             }
         }
         Text {
@@ -57,7 +62,7 @@ Item {
 
             color: "white"
 
-            text: title
+            text: textContent
             wrapMode: Text.Wrap
         }
     }

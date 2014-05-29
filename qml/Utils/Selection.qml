@@ -6,6 +6,8 @@ QtObject {
     signal selectionChanged(variant selection)
 
     function addToSelection(item) {
+        if( item && item.object && item.object.selected ) return;  // nothing to do
+
         Priv._selection.push(item);
         if( item.object )
             item.object.selected = true; // this may add eventualy a new property to the object
