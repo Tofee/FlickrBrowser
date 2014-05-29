@@ -13,9 +13,10 @@ Item {
 
     Column {
         id: buttonsColumn
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
+        anchors {
+            left: parent.left
+            top: parent.top
+        }
         width: filterButton.width
 
         Utils.VerticalCheckButton {
@@ -34,52 +35,41 @@ Item {
 
     // Right part: the column of panels
     Item {
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: buttonsColumn.right
-        anchors.right: parent.right
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: buttonsColumn.right
+            right: parent.right
+        }
 
-        Column {
-            anchors.left: parent.left
-            anchors.right: parent.right
+        // background
+        Image {
+            anchors { left: parent.left; right: parent.right }
+            height: panelsColumn.height
 
-            FilterPanel {
-                visible: isFilterPanelActive
+            source: Qt.resolvedUrl("../images/panel.png");
+            fillMode: Image.TileVertically
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-            }
-            PropertiesPanel {
-                visible: isPropertiesPanelActive
+            Column {
+                id: panelsColumn
+                anchors { top: parent.top; left: parent.left; right: parent.right }
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-            }
-            Rectangle {
-                visible: isEditionPanelActive
+                move: Transition {
+                    NumberAnimation { properties: "y"; duration: 200 }
+                }
 
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 150
-
-                color: "red"
-
-/*
-
-Official API:
-flickr.collections.getTree Optional user_id
-flickr.collections.getInfo Required collection_id
-NOT official:
-flickr.collections.create Optional description, Optional parent_id, Required title, Optional after_new_coll
-flickr.collections.sortCollections Optional child_collection_ids, Optional collection_id, Optional no_move
-flickr.collections.editSets Required collection_id, Optional do_remove, Required photoset_ids
-flickr.collections.createIcon Required collection_id, Required photo_ids
-flickr.collections.removeSet Required collection_id, Required photoset_id
-flickr.collections.delete Required collection_id, Optional recursive
-flickr.collections.moveCollection Required collection_id, Required parent_collection_id
-flickr.collections.editMeta Optional collection_id, Optional description, Optional title
-
-*/
+                FilterPanel {
+                    visible: isFilterPanelActive
+                    anchors { left: parent.left; right: parent.right }
+                }
+                PropertiesPanel {
+                    visible: isPropertiesPanelActive
+                    anchors { left: parent.left; right: parent.right }
+                }
+                AuthoringPanel {
+                    visible: isEditionPanelActive
+                    anchors { left: parent.left; right: parent.right }
+                }
             }
         }
     }

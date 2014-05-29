@@ -8,13 +8,6 @@ import "../Singletons"
 Item {
     height: filterRow.height
 
-    // background
-    Image {
-        anchors.fill: parent
-        source: Qt.resolvedUrl("../images/panel.png");
-        fillMode: Image.TileVertically
-    }
-
     RowLayout {
         id: filterRow
         width: parent.width
