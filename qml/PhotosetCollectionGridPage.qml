@@ -40,25 +40,18 @@ Item {
             Repeater {
                 model: smoothlyFilledModel
                 delegate:
-                    Item {
+                    Utils.FlowListDelegate {
                         id: delegateItem
 
-                        height: collectionCell.height
-                        width: collectionCell.width
-
                         property variant photoSetInfos: getPhotosetInfos(id)
-                        property string photosetIcon: photoSetInfos ? photoSetInfos.primary_photo_extras.url_s : ""
-                        property string photosetTitle: photoSetInfos ? photoSetInfos.title._content + "(" + String(parseInt(photoSetInfos.photos)+parseInt(photoSetInfos.videos)) + ")" : "Retrieving data...";
+                        icon: photoSetInfos ? photoSetInfos.primary_photo_extras.url_s : ""
+                        title: photoSetInfos ? photoSetInfos.title._content + "(" + String(parseInt(photoSetInfos.photos)+parseInt(photoSetInfos.videos)) + ")" : "Retrieving data...";
 
-                        Connections {
-                            target: FlickrBrowserApp.contextualFilter
-                            onFilterChanged: {
-                                delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.photosetTitle });
-                            }
-                        }
-                        Component.onCompleted: {
-                            delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.photosetTitle });
-                        }
+                        imageHeight: 180
+                        imageWidth: 180
+                        imageFillMode: Image.PreserveAspectCrop
+                        selected: (photoSetInfos && photoSetInfos.selected) ? true : false
+                        textPixelSize: 14
 
                         function getPhotosetInfos(myId) {
                             // Find the size of that album
@@ -69,60 +62,21 @@ Item {
                             }
                         }
 
-                        Column {
-                            id: collectionCell
-                            width: collectionImage.width
+                        onClicked: {
+                            if( !(mouse.modifiers & Qt.ControlModifier) )
+                                FlickrBrowserApp.currentSelection.clear();
 
-                            Image {
-                                id: collectionImage
-                                height: 180
-                                width: 180
-
-                                fillMode: Image.PreserveAspectCrop
-                                source: photosetIcon
-
-                                Rectangle {
-                                    id: selectionRect
-                                    anchors.fill: parent
-                                    opacity: 0.3
-                                    color: "blue"
-
-                                    visible: delegateItem.photoSetInfos.selected ? true : false
-                                }
-                            }
-                            Text {
-                                id: collectionTitle
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-
-                                font.pixelSize: 14
-                                color: "white"
-
-                                text: photosetTitle
-                                wrapMode: Text.Wrap
+                            if( !delegateItem.selected )
+                            {
+                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "set", "id": id, "object": delegateItem.photoSetInfos });
                             }
                         }
-                        Utils.SingleDoubleClickMouseArea {
-                            id: collectionCellMouseArea
-                            anchors.fill: collectionCell
-
-                            onRealClicked: {
-                                if( !(mouse.modifiers & Qt.ControlModifier) )
-                                    FlickrBrowserApp.currentSelection.clear();
-
-                                if( !delegateItem.photoSetInfos.selected )
-                                {
-                                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "set", "id": id, "object": delegateItem.photoSetInfos });
-                                }
-                            }
-                            onRealDoubleClicked: {
-                                // We are opening a photoset album
-                                console.log("showing photoset id = " + id);
-                                var stackView = collectionGridPage.Stack.view;
-                                stackView.navigationPath.push(delegateItem.photosetTitle);
-                                stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
-                                                properties: {"photosetId": id}});
-                            }
+                        onDoubleClicked: {
+                            // We are opening a photoset album
+                            var stackView = collectionGridPage.Stack.view;
+                            stackView.navigationPath.push(delegateItem.photosetTitle);
+                            stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
+                                            properties: {"photosetId": id}});
                         }
                     }
             }

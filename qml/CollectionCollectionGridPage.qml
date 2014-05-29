@@ -25,23 +25,17 @@ Item {
             Repeater {
                 model: pageModel
                 delegate:
-                    Item {
-                        id: delegateItem
+                    Utils.FlowListDelegate {
 
-                        height: collectionCell.height
-                        width: collectionCell.width
+                        icon: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
+                        title: getCollectionTitle();
 
-                        property string collectionTitleText: getCollectionTitle();
+                        imageFillMode: Image.PreserveAspectFit
+                        imageHeight: 150
+                        imageWidth: 150
+                        textPixelSize: 10
 
-                        Connections {
-                            target: FlickrBrowserApp.contextualFilter
-                            onFilterChanged: {
-                                delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.collectionTitleText });
-                            }
-                        }
-                        Component.onCompleted: {
-                            delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.collectionTitleText });
-                        }
+                        selected: (pageModel.get(index).selected) ? true : false
 
                         function getCollectionTitle() {
                             // We have to be careful here:
@@ -51,60 +45,33 @@ Item {
                             // in the current context
                             var myModelItem = pageModel.get(index)
                             if( myModelItem.collection ) {
-                                return title + "(" + myModelItem.collection.count + ")"
+                                return myModelItem.title + "(" + myModelItem.collection.count + ")"
                             }
                             else if( myModelItem.set ) {
-                                return title + "(" + myModelItem.set.count + ")"
+                                return myModelItem.title + "(" + myModelItem.set.count + ")"
                             }
 
-                            return title + "(0)"
+                            return myModelItem.title + "(0)"
                         }
 
-                        Column {
-                            id: collectionCell
-                            width: collectionImage.width
-
-                            Image {
-                                id: collectionImage
-                                height: 150
-                                width: 150
-
-                                fillMode: Image.PreserveAspectFit
-                                source: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
-                            }
-                            Text {
-                                id: collectionTitle
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-
-                                font.pixelSize: 10
-                                color: "white"
-
-                                text: collectionTitleText
-                                wrapMode: Text.Wrap
-                            }
+                        onClicked: {
+                            if( !(mouse.modifiers & Qt.ControlModifier) )
+                                FlickrBrowserApp.currentSelection.clear();
+                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id });
                         }
-                        Utils.SingleDoubleClickMouseArea {
-                            anchors.fill: collectionCell
-                            onRealClicked: {
-                                if( !(mouse.modifiers & Qt.ControlModifier) )
-                                    FlickrBrowserApp.currentSelection.clear();
-                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id });
-                            }
-                            onRealDoubleClicked: {
-                                var stackView = collectionGridPage.Stack.view;
-                                var myModelItem = pageModel.get(index)
+                        onDoubleClicked: {
+                            var stackView = collectionGridPage.Stack.view;
+                            var myModelItem = pageModel.get(index)
 
-                                if( myModelItem.collection ) {
-                                    stackView.navigationPath.push(title);
-                                    stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                                    properties: {"pageModel": myModelItem.collection}});
-                                }
-                                else if( myModelItem.set ) {
-                                    stackView.navigationPath.push(title);
-                                    stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                                    properties: {"pageModel": myModelItem.set}});
-                                }
+                            if( myModelItem.collection ) {
+                                stackView.navigationPath.push(title);
+                                stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
+                                                properties: {"pageModel": myModelItem.collection}});
+                            }
+                            else if( myModelItem.set ) {
+                                stackView.navigationPath.push(title);
+                                stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
+                                                properties: {"pageModel": myModelItem.set}});
                             }
                         }
                     }
