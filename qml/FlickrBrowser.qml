@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
+import QtQuick.Window 2.1
 
 import "Core/OAuthCore.js" as OAuth
 import "Core/DBAccess.js" as DBAccess
@@ -11,12 +12,15 @@ import "Singletons"
 import "Core" as Core
 import "ContextPanel"
 
-Item {
-    id: flickrBrowserRoot
+Window {
 
     width: 900
     height: 550
 
+Item {
+    id: flickrBrowserRoot
+
+    anchors.fill: parent
 /*
     HoverMenu {
         id: bottomHoverMenu
@@ -215,4 +219,4 @@ Item {
         anchors.fill: parent
     }
 }
-
+}
