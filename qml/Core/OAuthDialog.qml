@@ -59,12 +59,12 @@ Item {
 
     BusyIndicator {
         anchors.centerIn: parent;
-        running: state !== "needNewToken"
+        running: dialog.state !== "needNewToken"
     }
     Flickable {
         id: webFlicker
 
-        visible: state === "needNewToken"
+        visible: dialog.state === "needNewToken"
 
         anchors { fill: parent; topMargin: 50; leftMargin: 10; rightMargin: 10; bottomMargin: 10 }
         contentWidth: webView.width
@@ -136,6 +136,8 @@ Item {
                 }
                 else {
                     console.error(qsTr("Unable to obtain flickr request token"));
+                    Qt.quit();
+
                 }
                 //busyDialog.show = false;
             }
@@ -161,7 +163,8 @@ Item {
                     dialog.state = "authorized";
                 }
                 else {
-                    messages.displayMessage(qsTr("Unable to obtain twitter access token"));
+                    messages.displayMessage(qsTr("Unable to obtain flickr access token"));
+                    Qt.quit();
                 }
                 //busyDialog.show = false;
             }
