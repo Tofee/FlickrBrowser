@@ -3,15 +3,20 @@ import QtQuick.Controls 1.1
 
 import "Core/FlickrAPI.js" as FlickrAPI
 
-Item {
-    id: photoPage
+BrowserPage {
+    id: tagsPage
 
-    property alias tags: tagCanvas.tags
+    pageModel: tagsListModel
+    pageModelType: "Tags"
+
+    ListModel {
+        id: tagsListModel
+    }
 
     Component.onCompleted: {
         // Query Flickr to retrieve the list of the photos
         if( 1 ) {
-            FlickrAPI.callFlickrMethod("flickr.tags.getListUserRaw", null, function(response) {
+            FlickrAPI.callFlickrMethod("flickr.tags.getListUserRaw", null, tagsPage.toString(), function(response) {
                 if(response && response.who && response.who.tags)
                 {
                     var i;
@@ -21,7 +26,7 @@ Item {
                     for( i=0; i<response.who.tags.tag.length; i++ ) {
                         var tagRawText = response.who.tags.tag[i].raw[0]._content;
                         if( tagRawText[0] !== '#' ) {
-                            tags.append({ tag: tagRawText, pos: { x: pts[i][0], y: pts[i][1], z:  pts[i][2] } });
+                            tagsListModel.append({ tag: tagRawText, pos: { x: pts[i][0], y: pts[i][1], z:  pts[i][2] } });
                         }
                     }
 
@@ -35,16 +40,21 @@ Item {
             var nbTags = 202;
             var pts = tagCanvas.pointsOnSphere(nbTags,tagCanvas.sphereRadius,tagCanvas.sphereRadius,tagCanvas.sphereRadius);
             for( i=0; i < pts.length; i++ ) {
-                tags.append({ tag: ("Tag " + i), pos: { x: pts[i][0], y: pts[i][1], z:  pts[i][2] } });
+                tagsListModel.append({ tag: ("Tag " + i), pos: { x: pts[i][0], y: pts[i][1], z:  pts[i][2] } });
             }
 
             tagCanvas.requestPaint();
         }
+    }
+    Component.onDestruction: {
+        FlickrAPI.disableCallbacks(tagsPage.toString());
     }
 
     TagCanvas {
         id: tagCanvas
         width: parent.width
         height: parent.height
+
+        tags: tagsListModel
     }
 }

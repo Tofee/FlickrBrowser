@@ -4,10 +4,10 @@ import QtQuick.Controls 1.1
 import "Singletons"
 import "Utils" as Utils
 
-Item {
+BrowserPage {
     id: collectionGridPage
 
-    property ListModel pageModel;
+    pageModelType: "CollectionCollection"
 
     Flickable {
         anchors.fill: parent
@@ -67,12 +67,12 @@ Item {
                             if( myModelItem.collection ) {
                                 stackView.navigationPath.push(myModelItem.title);
                                 stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                                properties: {"pageModel": myModelItem.collection}});
+                                                properties: {"pageModel": myModelItem.collection, "pageItemId": myModelItem.id}});
                             }
                             else if( myModelItem.set ) {
                                 stackView.navigationPath.push(myModelItem.title);
                                 stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                                properties: {"pageModel": myModelItem.set}});
+                                                properties: {"pageModel": myModelItem.set, "pageItemId": myModelItem.id}});
                             }
                         }
                     }

@@ -5,12 +5,11 @@ import "Core/FlickrAPI.js" as FlickrAPI
 import "Singletons"
 import "Utils" as Utils
 
-Item {
+BrowserPage {
     id: photosetGridPage
 
-    property string photosetId;
-
-    property alias pageModel: photosetModel
+    pageModel: photosetModel
+    pageModelType: "Photoset"
 
     property real spacing : 5;
 
@@ -20,7 +19,7 @@ Item {
 
     Component.onCompleted: {
         // Query Flickr to retrieve the list of the photos
-        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", photosetId ], [ "extras", "url_s, url_o" ] ], function(response) {
+        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", pageItemId ], [ "extras", "url_s, url_o" ] ], photosetGridPage.toString(), function(response) {
             if(response && response.photoset && response.photoset.photo)
             {
                 var i;
@@ -33,6 +32,9 @@ Item {
                 doJustifyFlow();
             }
         });
+    }
+    Component.onDestruction: {
+        FlickrAPI.disableCallbacks(photosetGridPage.toString());
     }
 
     onWidthChanged: doJustifyFlow();
@@ -138,7 +140,7 @@ Item {
                             var stackView = photosetGridPage.Stack.view;
                             stackView.navigationPath.push(title);
                             stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                            properties: {"photoId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
+                                            properties: {"pageItemId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
 
                             FlickrBrowserApp.currentSelection.clear();
                             FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": photosetModel.get(index) });

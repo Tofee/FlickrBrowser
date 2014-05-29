@@ -4,10 +4,10 @@ import QtQuick.Controls 1.1
 import "Singletons"
 import "Utils" as Utils
 
-Item {
+BrowserPage {
     id: collectionGridPage
 
-    property ListModel pageModel
+    pageModelType: "PhotosetCollection"
     property ListModel photosetListModel: FlickrBrowserApp.photosetListModel
 
     // Little trick to avoid feeding the Repeater and the Flow with too many items at the same time.
@@ -77,7 +77,7 @@ Item {
                             var stackView = collectionGridPage.Stack.view;
                             stackView.navigationPath.push(delegateItem.textContent);
                             stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
-                                            properties: {"photosetId": id}});
+                                            properties: {"pageItemId": id}});
                         }
                     }
             }

@@ -69,8 +69,8 @@ Item {
             }
 
             onAuthorised: {
-                FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, cb_collectionlist);
-                FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ], cb_photosetlist);
+                FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, "", cb_collectionlist);
+                FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ], "", cb_photosetlist);
             }
 
             function cb_collectionlist(response) {
@@ -150,11 +150,13 @@ Item {
                         Component.onCompleted: navigationPathItem.push("Root");
                     }
 
+                    Binding {
+                        target: FlickrBrowserApp
+                        property: "currentShownPage"
+                        value: stackView.currentItem
+                    }
+
                     onCurrentItemChanged: {
-                        if( currentItem && currentItem.pageModel )
-                            FlickrBrowserApp.currentShownModel = currentItem.pageModel;
-                        else
-                            FlickrBrowserApp.currentShownModel = null;
                         FlickrBrowserApp.currentSelection.clear();
                     }
                 }

@@ -39,8 +39,8 @@ Item {
     /*------ Current selection -------*/
     property alias currentSelection: _currentSelection
 
-    /*------ Currently shown model -------*/
-    property variant currentShownModel;
+    /*------ Currently shown page -------*/
+    property Item currentShownPage;
 
     /*------ Contextual filter -------*/
     property alias contextualFilter: _contextualFilter

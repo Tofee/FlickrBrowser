@@ -3,10 +3,11 @@ import QtQuick.Controls 1.1
 
 import "Core/FlickrAPI.js" as FlickrAPI
 
-Item {
+BrowserPage {
     id: photoPage
 
-    property string photoId;
+    pageModelType: "Photo"
+
     property string photoUrl;
     property real photoHeight;
     property real photoWidth;
@@ -15,10 +16,13 @@ Item {
 
     Component.onCompleted: {
         // Query Flickr to retrieve the list of the photos
-        FlickrAPI.callFlickrMethod("flickr.photos.getInfo", [ [ "photo_id", photoId ] ], function(response) {
+        FlickrAPI.callFlickrMethod("flickr.photos.getInfo", [ [ "photo_id", pageItemId ] ], photoPage.toString(), function(response) {
             if(response )
                 photoDetails = response.photo;
         });
+    }
+    Component.onDestruction: {
+        FlickrAPI.disableCallbacks(photoPage.toString());
     }
 
     BusyIndicator {

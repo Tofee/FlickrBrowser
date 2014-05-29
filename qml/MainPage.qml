@@ -3,10 +3,10 @@ import QtQuick.Controls 1.1
 
 import "Singletons"
 
-Item {
+BrowserPage {
     id: mainPage
 
-    property alias pageModel: itemModel;
+    pageModelType: "RootView"
 
     VisualItemModel {
         id: itemModel
