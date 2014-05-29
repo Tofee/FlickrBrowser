@@ -6,9 +6,11 @@ import "../Core/FlickrAPI.js" as FlickrAPI
 
 // Display the properties of a photoset.
 ColumnLayout {
+    id: propertiesSet
+
     Component.onCompleted: {
         // Query Flickr to retrieve the informations on the photoset
-        FlickrAPI.callFlickrMethod("flickr.photosets.getInfo", [ [ "photoset_id", selectedItemId ] ], function(response) {
+        FlickrAPI.callFlickrMethod("flickr.photosets.getInfo", [ [ "photoset_id", currentItemId ] ], propertiesSet.toString(), function(response) {
             if(response && response.photoset)
             {
                 nbPhotos = response.photoset.count_photos;
@@ -22,6 +24,10 @@ ColumnLayout {
                 updateDate = dateUpdateValue.toLocaleString();
             }
         });
+    }
+    Component.onDestruction: {
+        // safe-guard: be sure the item was not deleted during this async call to Flickr
+        FlickrAPI.disableCallbacks(propertiesSet.toString());
     }
 
     property string title;

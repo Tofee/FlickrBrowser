@@ -105,7 +105,7 @@ Item {
     }
 
     function checkFlickrToken(token) {
-        FlickrAPI.callFlickrMethod("flickr.auth.oauth.checkToken", null,
+        FlickrAPI.callFlickrMethod("flickr.auth.oauth.checkToken", null, "",
                                    function (response) {
                                        if( response.stat && response.stat === "ok" ) {
                                            console.log("Token valid.");

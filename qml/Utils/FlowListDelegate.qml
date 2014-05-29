@@ -66,14 +66,14 @@ Item {
             wrapMode: Text.Wrap
         }
     }
-    SingleDoubleClickMouseArea {
+    MouseArea {
         id: collectionCellMouseArea
         anchors.fill: delegateColumn
 
-        onRealClicked: {
+        onClicked: {
             delegateItem.clicked(mouse);
         }
-        onRealDoubleClicked: {
+        onDoubleClicked: { // warning: this means a click has been issued just before
             delegateItem.doubleClicked(mouse);
         }
     }

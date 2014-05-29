@@ -6,9 +6,11 @@ import "../Core/FlickrAPI.js" as FlickrAPI
 
 // Display the properties of a photo.
 ColumnLayout {
+    id: propertiesPhoto
+
     Component.onCompleted: {
         // Query Flickr to retrieve the informations on the photo
-        FlickrAPI.callFlickrMethod("flickr.photos.getInfo", [ [ "photo_id", selectedItemId ] ], function(response) {
+        FlickrAPI.callFlickrMethod("flickr.photos.getInfo", [ [ "photo_id", currentItemId ] ], propertiesPhoto.toString(), function(response) {
             if(response && response.photo)
             {
                 title = response.photo.title._content;
@@ -31,6 +33,10 @@ ColumnLayout {
                 }
             }
         });
+    }
+    Component.onDestruction: {
+        // safe-guard: be sure the item was not deleted during this async call to Flickr
+        FlickrAPI.disableCallbacks(propertiesPhoto.toString());
     }
 
     property string title;

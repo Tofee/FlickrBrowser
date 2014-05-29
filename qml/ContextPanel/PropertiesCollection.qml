@@ -10,7 +10,7 @@ ColumnLayout {
 
     Component.onCompleted: {
         // Query Flickr to retrieve the informations on the collection
-        FlickrAPI.callFlickrMethod("flickr.collections.getInfo", [ [ "collection_id", selectedItemId ] ], function(response) {
+        FlickrAPI.callFlickrMethod("flickr.collections.getInfo", [ [ "collection_id", currentItemId ] ], propertiesCollection.toString(), function(response) {
             if(response && response.collection)
             {
                 nbChildren = response.collection.child_count;
@@ -18,6 +18,10 @@ ColumnLayout {
                 description = response.collection.description._content;
             }
         });
+    }
+    Component.onDestruction: {
+        // safe-guard: be sure the item was not deleted during this async call to Flickr
+        FlickrAPI.disableCallbacks(propertiesCollection.toString());
     }
 
     property int nbChildren;
