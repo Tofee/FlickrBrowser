@@ -8,7 +8,21 @@ Item {
     id: collectionGridPage
 
     property ListModel pageModel
-    property ListModel photoSetListModel: FlickrBrowserApp.photosetListModel
+    property ListModel photosetListModel: FlickrBrowserApp.photosetListModel
+
+    // Little trick to avoid feeding the Repeater and the Flow with too many items at the same time.
+    // This avoids a crash on windows, so...
+    ListModel {
+        id: smoothlyFilledModel
+    }
+    Timer {
+        property int i: 0
+        interval: 10
+        running: i<pageModel.count
+        onTriggered: smoothlyFilledModel.append(pageModel.get(i++));
+        repeat: true
+    }
+    /// end of little trick
 
     Flickable {
         anchors.fill: parent
@@ -24,7 +38,7 @@ Item {
             width: collectionGridPage.width
 
             Repeater {
-                model: pageModel
+                model: smoothlyFilledModel
                 delegate:
                     Item {
                         id: delegateItem
@@ -32,8 +46,9 @@ Item {
                         height: collectionCell.height
                         width: collectionCell.width
 
-                        property string photosetTitle: getPhotosetTitle()
-                        property string photosetIcon: getPhotosetIcon()
+                        property variant photoSetInfos: getPhotosetInfos(id)
+                        property string photosetIcon: photoSetInfos ? photoSetInfos.primary_photo_extras.url_s : ""
+                        property string photosetTitle: photoSetInfos ? photoSetInfos.title._content + "(" + String(parseInt(photoSetInfos.photos)+parseInt(photoSetInfos.videos)) + ")" : "Retrieving data...";
 
                         Connections {
                             target: FlickrBrowserApp.contextualFilter
@@ -45,23 +60,11 @@ Item {
                             delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.photosetTitle });
                         }
 
-                        function getPhotosetTitle() {
+                        function getPhotosetInfos(myId) {
                             // Find the size of that album
-                            var i;
-                            for( i = 0; i <= photoSetListModel.count; i++ ) {
-                                var photoSetInfo = photoSetListModel.get(i);
-                                if( photoSetInfo && photoSetInfo.id === id ) {
-                                    return photoSetInfo.title._content + "(" + String(parseInt(photoSetInfo.photos)+parseInt(photoSetInfo.videos)) + ")";
-                                }
-                            }
-                        }
-                        function getPhotosetIcon() {
-                            // Find the icon of that album
-                            var i;
-                            for( i = 0; i <= photoSetListModel.count; i++ ) {
-                                var photoSetInfo = photoSetListModel.get(i);
-                                if( photoSetInfo && photoSetInfo.id === id ) {
-                                    return photoSetInfo.primary_photo_extras.url_sq;
+                            for( var i = 0; i <= photosetListModel.count; i++ ) {
+                                if( photosetListModel.get(i).id === myId ) {
+                                    return photosetListModel.get(i);
                                 }
                             }
                         }
@@ -72,17 +75,27 @@ Item {
 
                             Image {
                                 id: collectionImage
-                                height: 150
-                                width: 150
+                                height: 180
+                                width: 180
 
-                                fillMode: Image.PreserveAspectFit
+                                fillMode: Image.PreserveAspectCrop
                                 source: photosetIcon
+
+                                Rectangle {
+                                    id: selectionRect
+                                    anchors.fill: parent
+                                    opacity: 0.3
+                                    color: "blue"
+
+                                    visible: delegateItem.photoSetInfos.selected ? true : false
+                                }
                             }
                             Text {
                                 id: collectionTitle
                                 anchors.left: parent.left
                                 anchors.right: parent.right
 
+                                font.pixelSize: 14
                                 color: "white"
 
                                 text: photosetTitle
@@ -90,17 +103,23 @@ Item {
                             }
                         }
                         Utils.SingleDoubleClickMouseArea {
+                            id: collectionCellMouseArea
                             anchors.fill: collectionCell
+
                             onRealClicked: {
                                 if( !(mouse.modifiers & Qt.ControlModifier) )
                                     FlickrBrowserApp.currentSelection.clear();
-                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "set", "id": id });
+
+                                if( !delegateItem.photoSetInfos.selected )
+                                {
+                                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "set", "id": id, "object": delegateItem.photoSetInfos });
+                                }
                             }
                             onRealDoubleClicked: {
                                 // We are opening a photoset album
                                 console.log("showing photoset id = " + id);
                                 var stackView = collectionGridPage.Stack.view;
-                                stackView.navigationPath.push(collectionTitle.text);
+                                stackView.navigationPath.push(delegateItem.photosetTitle);
                                 stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
                                                 properties: {"photosetId": id}});
                             }

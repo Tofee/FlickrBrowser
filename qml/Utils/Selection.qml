@@ -7,7 +7,30 @@ QtObject {
 
     function addToSelection(item) {
         Priv._selection.push(item);
+        if( item.object )
+            item.object.selected = true; // this may add eventualy a new property to the object
         selectionChanged(Priv._selection);
+    }
+    function removeFromSelection(criterias) {
+        var nbItemsRemoved = 0;
+        for (var i = Priv._selection.length - 1; i >= 0; i--) {
+            var identical = true;
+            for( j in criterias ) {
+                if( Priv._selection[i][j] !== criterias[j] )
+                {
+                    identical = false;
+                    break;
+                }
+            }
+            if( identical ) {
+                if( Priv._selection[i].object )
+                    Priv._selection[i].object.selected = false;
+                Priv._selection.splice(i, 1);
+                nbItemsRemoved++;
+            }
+        }
+        if( nbItemsRemoved > 0 )
+            selectionChanged(Priv._selection);
     }
 
     property int count: 0;
@@ -23,10 +46,7 @@ QtObject {
     }
 
     function clear() {
-        if( Priv._selection.length > 0 ) {
-            Priv._selection = [];
-            selectionChanged(Priv._selection);
-        }
+        removeFromSelection({});
     }
 
     ///// private

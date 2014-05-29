@@ -77,9 +77,11 @@ Item {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
 
+                                font.pixelSize: 10
                                 color: "white"
 
                                 text: collectionTitleText
+                                wrapMode: Text.Wrap
                             }
                         }
                         Utils.SingleDoubleClickMouseArea {
