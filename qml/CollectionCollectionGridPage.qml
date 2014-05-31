@@ -18,6 +18,7 @@ BrowserPage {
 
         Flow {
             id: collectionsGridView
+            property int lastSelectionIndex: -1;
 
             x: 0; y: 0
             width: collectionGridPage.width
@@ -56,9 +57,32 @@ BrowserPage {
                         }
 
                         onClicked: {
-                            if( !(mouse.modifiers & Qt.ControlModifier) )
+                            var nbSelected = FlickrBrowserApp.currentSelection.count;
+                            if( mouse.modifiers & Qt.ControlModifier ) {
+                                if( isSelected ) {
+                                    FlickrBrowserApp.currentSelection.removeFromSelection({ "type": "collection", "id": id });
+                                }
+                                else {
+                                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id, "object": pageModel.get(index) });
+                                }
+                            }
+                            else if( mouse.modifiers & Qt.ShiftModifier ) {
+                                if( collectionsGridView.lastSelectionIndex >= 0 && collectionsGridView.lastSelectionIndex != index ) {
+                                    var incr = (collectionsGridView.lastSelectionIndex > index) ? -1 : 1;
+                                    for( var idxSel = collectionsGridView.lastSelectionIndex; idxSel != index; idxSel += incr ) {
+                                        FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": pageModel.get(idxSel).id, "object": pageModel.get(idxSel) });
+                                    }
+                                }
+                            }
+                            else {
+                                var wasSelected = isSelected;
                                 FlickrBrowserApp.currentSelection.clear();
-                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id, "object": pageModel.get(index) });
+                                collectionsGridView.lastSelectionIndex = -1;
+                                if( !wasSelected || nbSelected !== 1 ) {
+                                    collectionsGridView.lastSelectionIndex = index;
+                                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id, "object": pageModel.get(index) });
+                                }
+                            }
                         }
                         onDoubleClicked: {
                             var stackView = collectionGridPage.Stack.view;
