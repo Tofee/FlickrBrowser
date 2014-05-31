@@ -34,6 +34,8 @@ function callFlickrMethod(method, args, objectName, callback) {
                 var responseJSON = {};
                 if( doc.responseText.length>0 && doc.responseText[0] === '{' )
                     responseJSON = JSON.parse(doc.responseText);
+                else
+                    console.log(doc.responseText);
                 callback(responseJSON);
             }
         }
@@ -50,6 +52,7 @@ function callFlickrMethod(method, args, objectName, callback) {
         if( credentials && credentials.token && credentials.secret ) {
             var oauthData = OAuth.createOAuthHeader("flickr", "GET", "https://api.flickr.com/services/rest/", credentials, null, parametersWithArgs);
             doc.open("GET", oauthData.url);
+            doc.setRequestHeader("Content-Encoding", "UTF-8");
             doc.setRequestHeader("Authorization", oauthData.header);
             doc.send();
         }

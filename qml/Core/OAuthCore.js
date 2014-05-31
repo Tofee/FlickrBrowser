@@ -167,7 +167,7 @@ function createOAuthHeader(site, type, url, credentials, authParameters, paramet
             if (ii == 0) requrl += "?";
             else requrl += "&";
             // console.log("sending parameters: " + parameters[ii][0] + "=" + encodeURIComponent(parameters[ii][1]));
-            requrl += parameters[ii][0] + "=" + escape(parameters[ii][1]);
+            requrl += parameters[ii][0] + "=" + encodeURIComponent(parameters[ii][1]);
         }
     }
     var oauthData = { "url": requrl, "header": authHeader };
