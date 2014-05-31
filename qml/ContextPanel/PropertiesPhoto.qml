@@ -48,6 +48,13 @@ ColumnLayout {
     property string tags;
 
     Label {
+        text: "Properties of this photo";
+    }
+    Label {
+        Layout.preferredWidth: parent.width
+        text: "ID : " + currentItemId;
+    }
+    Label {
         Layout.preferredWidth: parent.width
         text: "Title : " + title;
         wrapMode: Text.Wrap

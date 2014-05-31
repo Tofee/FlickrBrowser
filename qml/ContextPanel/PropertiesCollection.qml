@@ -29,7 +29,11 @@ ColumnLayout {
     property string description;
 
     Label {
-        text: "The selection is a collection";
+        text: "Properties of this collection";
+    }
+    Label {
+        Layout.preferredWidth: parent.width
+        text: "ID : " + currentItemId;
     }
     Label {
         Layout.preferredWidth: parent.width

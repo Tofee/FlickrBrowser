@@ -38,7 +38,11 @@ ColumnLayout {
     property string updateDate;
 
     Label {
-        text: "The selection is an album";
+        text: "Properties of this album";
+    }
+    Label {
+        Layout.preferredWidth: parent.width
+        text: "ID : " + currentItemId;
     }
     Label {
         Layout.preferredWidth: parent.width
