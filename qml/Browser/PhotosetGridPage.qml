@@ -1,9 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-import "Core/FlickrAPI.js" as FlickrAPI
-import "Singletons"
-import "Utils" as Utils
+import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Singletons"
+import "../Utils" as Utils
 
 BrowserPage {
     id: photosetGridPage

@@ -11,6 +11,7 @@ import "Core/FlickrAPI.js" as FlickrAPI
 import "Singletons"
 import "Core" as Core
 import "ContextPanel"
+import "Browser"
 
 Window {
 

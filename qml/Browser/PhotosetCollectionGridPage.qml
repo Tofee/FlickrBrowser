@@ -1,8 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-import "Singletons"
-import "Utils" as Utils
+import "../Singletons"
+import "../Utils" as Utils
 
 BrowserPage {
     id: collectionGridPage
