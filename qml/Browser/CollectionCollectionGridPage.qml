@@ -1,106 +1,68 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-import "Singletons"
-import "Utils" as Utils
+import "../Singletons"
+import "../Utils" as Utils
 
 BrowserPage {
     id: collectionGridPage
 
     pageModelType: "CollectionCollection"
 
-    Flickable {
-        anchors.fill: parent
-        contentWidth: parent.width
-        contentHeight: collectionsGridView.height
-        clip: true
-        flickableDirection: Flickable.VerticalFlick
+    Utils.FlowList {
+        id: flowList
 
-        Flow {
-            id: collectionsGridView
-            property int lastSelectionIndex: -1;
+        itemType: "collection"
 
-            x: 0; y: 0
-            width: collectionGridPage.width
-            spacing: 3
+        model: pageModel
+        delegate:
+            Utils.FlowListDelegate {
 
-            Repeater {
-                model: pageModel
-                delegate:
-                    Utils.FlowListDelegate {
+                imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
+                textContent: getCollectionTitle();
 
-                        imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
-                        textContent: getCollectionTitle();
+                imageFillMode: Image.PreserveAspectFit
+                imageHeight: 150
+                imageWidth: 150
+                textPixelSize: 10
 
-                        imageFillMode: Image.PreserveAspectFit
-                        imageHeight: 150
-                        imageWidth: 150
-                        textPixelSize: 10
+                isSelected: (pageModel.get(index).selected) ? true : false
 
-                        isSelected: (pageModel.get(index).selected) ? true : false
-
-                        function getCollectionTitle() {
-                            // We have to be careful here:
-                            // the "collection" property could very well not
-                            // exist at all in the model, and therefore
-                            // not being defined as an attached property
-                            // in the current context
-                            var myModelItem = pageModel.get(index)
-                            if( myModelItem.collection ) {
-                                return myModelItem.title + "(" + myModelItem.collection.count + ")"
-                            }
-                            else if( myModelItem.set ) {
-                                return myModelItem.title + "(" + myModelItem.set.count + ")"
-                            }
-
-                            return myModelItem.title + "(0)"
-                        }
-
-                        onClicked: {
-                            var nbSelected = FlickrBrowserApp.currentSelection.count;
-                            if( mouse.modifiers & Qt.ControlModifier ) {
-                                if( isSelected ) {
-                                    FlickrBrowserApp.currentSelection.removeFromSelection({ "type": "collection", "id": id });
-                                }
-                                else {
-                                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id, "object": pageModel.get(index) });
-                                }
-                            }
-                            else if( mouse.modifiers & Qt.ShiftModifier ) {
-                                if( collectionsGridView.lastSelectionIndex >= 0 && collectionsGridView.lastSelectionIndex != index ) {
-                                    var incr = (collectionsGridView.lastSelectionIndex > index) ? -1 : 1;
-                                    for( var idxSel = collectionsGridView.lastSelectionIndex; idxSel != index; idxSel += incr ) {
-                                        FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": pageModel.get(idxSel).id, "object": pageModel.get(idxSel) });
-                                    }
-                                }
-                            }
-                            else {
-                                var wasSelected = isSelected;
-                                FlickrBrowserApp.currentSelection.clear();
-                                collectionsGridView.lastSelectionIndex = -1;
-                                if( !wasSelected || nbSelected !== 1 ) {
-                                    collectionsGridView.lastSelectionIndex = index;
-                                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "collection", "id": id, "object": pageModel.get(index) });
-                                }
-                            }
-                        }
-                        onDoubleClicked: {
-                            var stackView = collectionGridPage.Stack.view;
-                            var myModelItem = pageModel.get(index)
-
-                            if( myModelItem.collection ) {
-                                stackView.navigationPath.push(myModelItem.title);
-                                stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                                properties: {"pageModel": myModelItem.collection, "pageItemId": myModelItem.id}});
-                            }
-                            else if( myModelItem.set ) {
-                                stackView.navigationPath.push(myModelItem.title);
-                                stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                                properties: {"pageModel": myModelItem.set, "pageItemId": myModelItem.id}});
-                            }
-                        }
+                function getCollectionTitle() {
+                    // We have to be careful here:
+                    // the "collection" property could very well not
+                    // exist at all in the model, and therefore
+                    // not being defined as an attached property
+                    // in the current context
+                    var myModelItem = pageModel.get(index)
+                    if( myModelItem.collection ) {
+                        return myModelItem.title + "(" + myModelItem.collection.count + ")"
                     }
+                    else if( myModelItem.set ) {
+                        return myModelItem.title + "(" + myModelItem.set.count + ")"
+                    }
+
+                    return myModelItem.title + "(0)"
+                }
+
+                onClicked: {
+                    flowList.selected(index, mouse.modifiers);
+                }
+                onDoubleClicked: {
+                    var stackView = collectionGridPage.Stack.view;
+                    var myModelItem = pageModel.get(index)
+
+                    if( myModelItem.collection ) {
+                        stackView.navigationPath.push(myModelItem.title);
+                        stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
+                                        properties: {"pageModel": myModelItem.collection, "pageItemId": myModelItem.id}});
+                    }
+                    else if( myModelItem.set ) {
+                        stackView.navigationPath.push(myModelItem.title);
+                        stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
+                                        properties: {"pageModel": myModelItem.set, "pageItemId": myModelItem.id}});
+                    }
+                }
             }
-        }
     }
 }
