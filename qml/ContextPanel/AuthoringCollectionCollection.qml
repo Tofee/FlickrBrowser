@@ -43,21 +43,8 @@ Column {
         text: "Delete collection..."
         checkable: true
     }
-    Column {
+    FormRemoveCollection {
         width: parent.width
         visible: removeCollectionButton.checked
-        Label {
-            width: parent.width
-            text: "This will permanently remove the selected collections!"
-            wrapMode: Text.Wrap
-        }
-        RowLayout {
-            Button {
-                text: "Cancel"
-            }
-            Button {
-                text: "OK"
-            }
-        }
     }
 }
