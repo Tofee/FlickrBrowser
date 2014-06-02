@@ -15,7 +15,7 @@ Canvas {
     Behavior on longitude { NumberAnimation { duration: 1000 } }
     Behavior on latitude  { NumberAnimation { duration: 1000 } }
 
-    property ListModel tags: ListModel {}
+    property ListModel tags
 
     function initializeCache(listTagImages) {
         var ctx = canvas.getContext('2d');

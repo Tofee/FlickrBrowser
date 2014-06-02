@@ -11,9 +11,8 @@ MouseArea {
         running: false; repeat: false
         onTriggered: cellMouseArea.realClicked(clickTimer.mouseArg);
     }
-    anchors.fill: collectionCell
     onClicked: {
-        clickTimer.mouseArg = { modifier: mouse.modifiers,
+        clickTimer.mouseArg = { modifiers: mouse.modifiers,
                                 button: mouse.button,
                                 buttons: mouse.buttons,
                                 x: mouse.x,

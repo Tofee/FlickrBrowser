@@ -1,16 +1,15 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-import "Core/FlickrAPI.js" as FlickrAPI
-import "Singletons"
-import "Utils" as Utils
+import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Singletons"
+import "../Utils" as Utils
 
-Item {
+BrowserPage {
     id: photosetGridPage
 
-    property string photosetId;
-
-    property alias pageModel: photosetModel
+    pageModel: photosetModel
+    pageModelType: "Photoset"
 
     property real spacing : 5;
 
@@ -20,7 +19,7 @@ Item {
 
     Component.onCompleted: {
         // Query Flickr to retrieve the list of the photos
-        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", photosetId ], [ "extras", "url_s, url_o" ] ], function(response) {
+        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", pageItemId ], [ "extras", "url_s, url_o" ] ], photosetGridPage.toString(), function(response) {
             if(response && response.photoset && response.photoset.photo)
             {
                 var i;
@@ -33,6 +32,9 @@ Item {
                 doJustifyFlow();
             }
         });
+    }
+    Component.onDestruction: {
+        FlickrAPI.disableCallbacks(photosetGridPage.toString());
     }
 
     onWidthChanged: doJustifyFlow();
@@ -83,37 +85,29 @@ Item {
                 model: photosetModel
 
                 delegate:
-                    Item {
-                        id: photoCell
-                        width: photoImage.width
-                        height: photoImage.height
+                    Utils.FlowListDelegate {
+                        id: delegateItem
 
-                        Connections {
-                            target: FlickrBrowserApp.contextualFilter
-                            onFilterChanged: {
-                                photoCell.visible = FlickrBrowserApp.contextualFilter.matches({ "title": title });
-                            }
-                        }
-                        Component.onCompleted: {
-                            photoCell.visible = FlickrBrowserApp.contextualFilter.matches({ "title": title });
-                        }
+                        imageSource: url_s
+                        textContent: title;
 
-                        Image {
-                            id: photoImage
-                            height: height_s * scaling
-                            width: width_s * scaling
+                        imageHeight: height_s * scaling
+                        imageWidth: width_s * scaling
+                        imageFillMode: Image.PreserveAspectFit
+                        isSelected: (pageModel.get(index).selected) ? true : false
+                        textPixelSize: 14
 
-                            fillMode: Image.PreserveAspectFit
-                            source: url_s
-                        }
+                        showText: false
+                        hoverEnabled: true
+
                         Item {
                             // show title at the bottom of the image, on mouse over
-                            anchors.left: photoImage.left
-                            anchors.right: photoImage.right
-                            anchors.bottom: photoImage.bottom
-                            height: collectionTitle.height * 1.1
+                            anchors.left: delegateItem.left
+                            anchors.right: delegateItem.right
+                            anchors.bottom: delegateItem.bottom
+                            height: photoTitle.height * 1.1
 
-                            opacity:photoCellMouseArea.containsMouse ? 1.0: 0
+                            opacity:delegateItem.containsMouse ? 1.0: 0
                             Behavior on opacity { NumberAnimation { duration: 200 } }
 
                             Rectangle {
@@ -122,7 +116,7 @@ Item {
                                 opacity: 0.8
                             }
                             Text {
-                                id: collectionTitle
+                                id: photoTitle
                                 anchors.left: parent.left
                                 anchors.right: parent.right
 
@@ -131,31 +125,25 @@ Item {
                                 verticalAlignment: Text.AlignVCenter
                                 wrapMode: Text.Wrap
 
-                                text: title
+                                text: delegateItem.textContent
                             }
                         }
-                        Utils.SingleDoubleClickMouseArea {
-                            id: photoCellMouseArea
-                            anchors.fill: photoCell
 
-                            hoverEnabled: true
-
-                            onRealClicked: {
-                                if( !(mouse.modifiers & Qt.ControlModifier) )
-                                    FlickrBrowserApp.currentSelection.clear();
-                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id });
-                            }
-
-                            onRealDoubleClicked: {
-                                // show full screen photo
-                                var stackView = photosetGridPage.Stack.view;
-                                stackView.navigationPath.push(title);
-                                stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                                properties: {"photoId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
-
+                        onClicked: {
+                            if( !(mouse.modifiers & Qt.ControlModifier) )
                                 FlickrBrowserApp.currentSelection.clear();
-                                FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id });
-                            }
+                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": photosetModel.get(index) });
+                        }
+
+                        onDoubleClicked: {
+                            // show full screen photo
+                            var stackView = photosetGridPage.Stack.view;
+                            stackView.navigationPath.push(title);
+                            stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
+                                            properties: {"pageItemId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
+
+                            FlickrBrowserApp.currentSelection.clear();
+                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": photosetModel.get(index) });
                         }
                     }
             }

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
+import QtQuick.Window 2.1
 
 import "Core/OAuthCore.js" as OAuth
 import "Core/DBAccess.js" as DBAccess
@@ -10,13 +11,17 @@ import "Core/FlickrAPI.js" as FlickrAPI
 import "Singletons"
 import "Core" as Core
 import "ContextPanel"
+import "Browser"
 
-Item {
-    id: flickrBrowserRoot
+Window {
 
     width: 900
     height: 550
 
+Item {
+    id: flickrBrowserRoot
+
+    anchors.fill: parent
 /*
     HoverMenu {
         id: bottomHoverMenu
@@ -65,8 +70,8 @@ Item {
             }
 
             onAuthorised: {
-                FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, cb_collectionlist);
-                FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq" ] ], cb_photosetlist);
+                FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, "", cb_collectionlist);
+                FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ], "", cb_photosetlist);
             }
 
             function cb_collectionlist(response) {
@@ -146,11 +151,13 @@ Item {
                         Component.onCompleted: navigationPathItem.push("Root");
                     }
 
+                    Binding {
+                        target: FlickrBrowserApp
+                        property: "currentShownPage"
+                        value: stackView.currentItem
+                    }
+
                     onCurrentItemChanged: {
-                        if( currentItem && currentItem.pageModel )
-                            FlickrBrowserApp.currentShownModel = currentItem.pageModel;
-                        else
-                            FlickrBrowserApp.currentShownModel = null;
                         FlickrBrowserApp.currentSelection.clear();
                     }
                 }
@@ -215,4 +222,4 @@ Item {
         anchors.fill: parent
     }
 }
-
+}

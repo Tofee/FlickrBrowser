@@ -17,9 +17,11 @@ Item {
     function fillCollectionTreeModel(jsonArray) {
         rootCollectionTreeModel.clear();
 
-        var i;
-        for( i=0; i<jsonArray.length; i++ ) {
-            rootCollectionTreeModel.append(jsonArray[i]);
+        if( jsonArray ) {
+            var i;
+            for( i=0; i<jsonArray.length; i++ ) {
+                rootCollectionTreeModel.append(jsonArray[i]);
+            }
         }
 
         collectionTreeChanged();
@@ -28,9 +30,11 @@ Item {
     function fillPhotosetListModel(jsonArray) {
         rootPhotosetListModel.clear();
 
-        var i;
-        for( i=0; i<jsonArray.length; i++ ) {
-            rootPhotosetListModel.append(jsonArray[i]);
+        if( jsonArray ) {
+            var i;
+            for( i=0; i<jsonArray.length; i++ ) {
+                rootPhotosetListModel.append(jsonArray[i]);
+            }
         }
 
         photosetListChanged();
@@ -39,8 +43,8 @@ Item {
     /*------ Current selection -------*/
     property alias currentSelection: _currentSelection
 
-    /*------ Currently shown model -------*/
-    property variant currentShownModel;
+    /*------ Currently shown page -------*/
+    property Item currentShownPage;
 
     /*------ Contextual filter -------*/
     property alias contextualFilter: _contextualFilter

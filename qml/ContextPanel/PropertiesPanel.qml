@@ -8,21 +8,12 @@ import "../Singletons"
 Item {
     height: selectionLoader.height
 
-    // background
-    Image {
-        anchors.fill: parent
-        source: Qt.resolvedUrl("../images/panel.png");
-        fillMode: Image.TileVertically
-    }
-
     Loader {
         anchors.left: parent.left
         anchors.right: parent.right
 
         id: selectionLoader
-        sourceComponent: FlickrBrowserApp.currentSelection.count > 1 ? multiSelectionPropertiesComp :
-                         FlickrBrowserApp.currentSelection.count === 1 ? singleSelectionPropertiesComp :
-                                                                          noSelectionPropertiesComp
+        sourceComponent: FlickrBrowserApp.currentSelection.count > 1 ? multiSelectionPropertiesComp : simplePropertiesComp
     }
     Component {
         id: multiSelectionPropertiesComp
@@ -33,30 +24,59 @@ Item {
         }
     }
     Component {
-        id: singleSelectionPropertiesComp
+        id: simplePropertiesComp
         Item {
             height: propertiesLoader.height
 
-            property variant selectedItem: FlickrBrowserApp.currentSelection.get(0)
-            property string selectedItemType: selectedItem.type
+            property variant currentItem: FlickrBrowserApp.currentSelection.count===1 ?
+                                               FlickrBrowserApp.currentSelection.get(0) :
+                                               FlickrBrowserApp.currentShownPage
             Loader {
                 id: propertiesLoader
 
                 anchors.left: parent.left
                 anchors.right: parent.right
 
-                property string selectedItemId: selectedItem.id
+                property string currentItemId
             }
-            onSelectedItemTypeChanged: {
+            onCurrentItemChanged: {
                 propertiesLoader.active = false; // force unload
-                if( selectedItemType === "collection" )
+                if( !currentItem ) return;
+                if( currentItem.type === "collection" )
+                {
+                    propertiesLoader.currentItemId = currentItem.id;
                     propertiesLoader.source = "PropertiesCollection.qml";
-                else if( selectedItemType === "set" )
+                }
+                else if( currentItem.pageModelType === "CollectionCollection" ||
+                         currentItem.pageModelType === "PhotosetCollection" )
+                {
+                    propertiesLoader.currentItemId = currentItem.pageItemId;
+                    propertiesLoader.source = "PropertiesCollection.qml";
+                }
+                else if( currentItem.type === "set" )
+                {
+                    propertiesLoader.currentItemId = currentItem.id;
                     propertiesLoader.source = "PropertiesSet.qml";
-                else if( selectedItemType === "photo" )
+                }
+                else if( currentItem.pageModelType === "Photoset" )
+                {
+                    propertiesLoader.currentItemId = currentItem.pageItemId;
+                    propertiesLoader.source = "PropertiesSet.qml";
+                }
+                else if( currentItem.type === "photo" )
+                {
+                    propertiesLoader.currentItemId = currentItem.id;
                     propertiesLoader.source = "PropertiesPhoto.qml";
+                }
+                else if( currentItem.pageModelType === "Photo" )
+                {
+                    propertiesLoader.currentItemId = currentItem.pageItemId;
+                    propertiesLoader.source = "PropertiesPhoto.qml";
+                }
                 else
+                {
                     propertiesLoader.source = "";
+                }
                 propertiesLoader.active = true;
             }
         }
@@ -65,8 +85,8 @@ Item {
         id: noSelectionPropertiesComp
         ColumnLayout {
             Label {
-                text: FlickrBrowserApp.currentShownModel ?
-                          FlickrBrowserApp.currentShownModel.count + " items":
+                text: FlickrBrowserApp.currentShownPage ?
+                          FlickrBrowserApp.currentShownPage.pageModel.count + " items":
                           "N/A";
             }
         }
