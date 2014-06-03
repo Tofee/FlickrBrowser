@@ -67,86 +67,73 @@ BrowserPage {
         }
     }
 
-    Flickable {
+    Utils.FlowList {
         anchors.fill: parent
-        contentWidth: parent.width
-        contentHeight: photosGridView.height
-        clip: true
-        flickableDirection: Flickable.VerticalFlick
+        id: flowList
 
-        Flow {
-            id: photosGridView
+        itemType: "photo"
+        spacing: photosetGridPage.spacing
 
-            x: 0; y: 0
-            width: photosetGridPage.width
-            spacing: photosetGridPage.spacing
+        model: photosetModel
+        delegate:
+            Utils.FlowListDelegate {
+                id: delegateItem
 
-            Repeater {
-                model: photosetModel
+                imageSource: url_s
+                textContent: title;
 
-                delegate:
-                    Utils.FlowListDelegate {
-                        id: delegateItem
+                imageHeight: height_s * scaling
+                imageWidth: width_s * scaling
+                imageFillMode: Image.PreserveAspectFit
+                isSelected: (pageModel.get(index).selected) ? true : false
+                textPixelSize: 14
 
-                        imageSource: url_s
-                        textContent: title;
+                showText: false
+                hoverEnabled: true
 
-                        imageHeight: height_s * scaling
-                        imageWidth: width_s * scaling
-                        imageFillMode: Image.PreserveAspectFit
-                        isSelected: (pageModel.get(index).selected) ? true : false
-                        textPixelSize: 14
+                Item {
+                    // show title at the bottom of the image, on mouse over
+                    anchors.left: delegateItem.left
+                    anchors.right: delegateItem.right
+                    anchors.bottom: delegateItem.bottom
+                    height: photoTitle.height * 1.1
 
-                        showText: false
-                        hoverEnabled: true
+                    opacity:delegateItem.containsMouse ? 1.0: 0
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
 
-                        Item {
-                            // show title at the bottom of the image, on mouse over
-                            anchors.left: delegateItem.left
-                            anchors.right: delegateItem.right
-                            anchors.bottom: delegateItem.bottom
-                            height: photoTitle.height * 1.1
-
-                            opacity:delegateItem.containsMouse ? 1.0: 0
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                color: "black"
-                                opacity: 0.8
-                            }
-                            Text {
-                                id: photoTitle
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-
-                                color: "white"
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                wrapMode: Text.Wrap
-
-                                text: delegateItem.textContent
-                            }
-                        }
-
-                        onClicked: {
-                            if( !(mouse.modifiers & Qt.ControlModifier) )
-                                FlickrBrowserApp.currentSelection.clear();
-                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": photosetModel.get(index) });
-                        }
-
-                        onDoubleClicked: {
-                            // show full screen photo
-                            var stackView = photosetGridPage.Stack.view;
-                            stackView.navigationPath.push(title);
-                            stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                            properties: {"pageItemId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
-
-                            FlickrBrowserApp.currentSelection.clear();
-                            FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": photosetModel.get(index) });
-                        }
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "black"
+                        opacity: 0.8
                     }
+                    Text {
+                        id: photoTitle
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        color: "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        wrapMode: Text.Wrap
+
+                        text: delegateItem.textContent
+                    }
+                }
+
+                onClicked: {
+                    flowList.selected(index, mouse.modifiers);
+                }
+
+                onDoubleClicked: {
+                    // show full screen photo
+                    var stackView = photosetGridPage.Stack.view;
+                    stackView.navigationPath.push(title);
+                    stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
+                                    properties: {"pageItemId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
+
+                    FlickrBrowserApp.currentSelection.clear();
+                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": photosetModel.get(index) });
+                }
             }
-        }
     }
 }

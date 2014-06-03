@@ -10,6 +10,7 @@ BrowserPage {
     pageModelType: "CollectionCollection"
 
     Utils.FlowList {
+        anchors.fill: parent
         id: flowList
 
         itemType: "collection"
@@ -18,7 +19,7 @@ BrowserPage {
         delegate:
             Utils.FlowListDelegate {
 
-                imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
+                imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("../images/collection_default_l.gif")
                 textContent: getCollectionTitle();
 
                 imageFillMode: Image.PreserveAspectFit
