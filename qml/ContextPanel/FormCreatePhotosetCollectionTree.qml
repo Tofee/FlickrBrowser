@@ -10,9 +10,6 @@ import "../Singletons"
 Column {
     id: createPhotosetCollectionTreeForm
 
-    property ListModel collectionListModel: FlickrBrowserApp.collectionTreeModel
-    property ListModel photosetListModel: FlickrBrowserApp.photosetListModel
-
     signal cancelTriggered();
     signal okTriggered();
 
@@ -33,7 +30,7 @@ Column {
 
             moveSetsArgs.push([ "photoset_ids", photoSetsId ]);
 
-            FlickrAPI.callFlickrMethod("flickr.collections.editSets", moveSetsArgs, createPhotosetCollectionTreeForm.toString(), function(response) {
+            FlickrAPI.callFlickrMethod("flickr.collections.editSets", moveSetsArgs, function(response) {
                 if(response && response.stat && response.stat === "ok")
                 {
                     console.log("Sets added to the new collection !");
@@ -97,7 +94,7 @@ Column {
         if( underColId && underColId.length>0 )
             createArgs.push([ "parent_id", underColId ]);
 
-        FlickrAPI.callFlickrMethod("flickr.collections.create", createArgs, createPhotosetCollectionTreeForm.toString(), function(response) {
+        FlickrAPI.callFlickrMethod("flickr.collections.create", createArgs, function(response) {
             var newColId = "";
             if(response && response.stat && response.stat === "ok")
             {
@@ -128,20 +125,16 @@ Column {
             parentColName = photoSetName.split('/',1)[0];
         }
 
-        putPhotosetUnderCollection(photoSetId, nameToCreate, parentColName, "", collectionListModel, 0);
-    }
-
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(createPhotosetCollectionTreeForm.toString());
+        putPhotosetUnderCollection(photoSetId, nameToCreate, parentColName, "", FlickrBrowserApp.collectionTreeModel, 0);
     }
 
     onCancelTriggered: {
     }
     onOkTriggered: {
         var i = 0;
-        for( i = 0; i < photosetListModel.count; ++i )
+        for( i = 0; i < FlickrBrowserApp.photosetListModel.count; ++i )
         {
-            createCollectionTree(photosetListModel.get(i).id, photosetListModel.get(i).title._content);
+            createCollectionTree(FlickrBrowserApp.photosetListModel.get(i).id, FlickrBrowserApp.photosetListModel.get(i).title._content);
         }
     }
 

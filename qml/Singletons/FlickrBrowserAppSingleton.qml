@@ -54,7 +54,7 @@ Item {
     /*------ Flickr API call -------*/
     function callFlickr(method, args) {
         var reply = flickrReplyComponent.createObject(null); // no parent: it is only held by the "reply" variable
-        FlickrAPI.callFlickrMethod(method, args, "", function(response) {
+        FlickrAPI.callFlickrMethod(method, args, function(response) {
             reply.received(response); // emit signal
             reply.destroy();
         });

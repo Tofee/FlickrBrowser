@@ -6,22 +6,18 @@ import QtQuick.Window 2.1
 
 import "Core/OAuthCore.js" as OAuth
 import "Core/DBAccess.js" as DBAccess
-import "Core/FlickrAPI.js" as FlickrAPI
 
 import "Singletons"
-import "Core" as Core
+import "Core"
 import "ContextPanel"
 import "Browser"
-
-Window {
-
-    width: 900
-    height: 550
 
 Item {
     id: flickrBrowserRoot
 
-    anchors.fill: parent
+    width: 900
+    height: 550
+
 /*
     HoverMenu {
         id: bottomHoverMenu
@@ -53,7 +49,7 @@ Item {
     // login page
     Component {
         id: loginPageComp
-        Core.LoginPage {
+        LoginPage {
             property bool collectionTreeRetrieved: false
             property bool photosetListRetrieved: false
 
@@ -69,17 +65,24 @@ Item {
                 }
             }
 
+            property FlickrReply flickrReplyCollectionList;
+            property FlickrReply flickrReplyPhotosetList;
+            Connections {
+                target: flickrReplyCollectionList
+                onReceived: {
+                    FlickrBrowserApp.fillCollectionTreeModel(response.collections.collection);
+                }
+            }
+            Connections {
+                target: flickrReplyPhotosetList
+                onReceived: {
+                    FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
+                }
+            }
+
             onAuthorised: {
-                FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, "", cb_collectionlist);
-                FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ], "", cb_photosetlist);
-            }
-
-            function cb_collectionlist(response) {
-                FlickrBrowserApp.fillCollectionTreeModel(response.collections.collection);
-            }
-
-            function cb_photosetlist(response) {
-                FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
+                flickrReplyCollectionList = FlickrBrowserApp.callFlickr("flickr.collections.getTree", null);
+                flickrReplyPhotosetList = FlickrBrowserApp.callFlickr("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ]);
             }
         }
     }
@@ -221,5 +224,4 @@ Item {
         id: loginLoader
         anchors.fill: parent
     }
-}
 }

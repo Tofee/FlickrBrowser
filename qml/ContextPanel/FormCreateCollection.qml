@@ -2,9 +2,9 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
 import "AuthoringServices.js" as AuthoringServices
 
+import "../Core"
 import "../Singletons"
 
 Column {
@@ -24,34 +24,37 @@ Column {
         if( underColId && underColId.length>0 )
             createArgs.push([ "parent_id", underColId ]);
 
-        FlickrAPI.callFlickrMethod("flickr.collections.create", createArgs, createCollectionForm.toString(), function(response) {
-            var newColId = "";
-            if(response && response.stat && response.stat === "ok")
-            {
-                newColId = response.collection.id;
-                console.log("Collection created !");
-            }
-
-            // now move the selected collections under that one
-            if( moveSelection && newColId.length>0 && FlickrBrowserApp.currentSelection.count>0 ) {
-                var iSel;
-                for( iSel = 0; iSel < FlickrBrowserApp.currentSelection.count; ++iSel ) {
-                    var moveArgs = [];
-                    moveArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
-                    moveArgs.push([ "parent_collection_id", newColId ]);
-
-                    FlickrAPI.callFlickrMethod("flickr.collections.moveCollection", moveArgs, createCollectionForm.toString(), function(response) {
-                        if(response && response.stat && response.stat === "ok")
-                        {
-                            console.log("Collection moved !");
-                        }
-                    });
+        var flickrReplyCreateCollection = FlickrBrowserApp.callFlickr("flickr.collections.create", createArgs);
+        if( flickrReplyCreateCollection ) {
+            flickrReplyCreateCollection.received.connect(function(response) {
+                var newColId = "";
+                if(response && response.stat && response.stat === "ok")
+                {
+                    newColId = response.collection.id;
+                    console.log("Collection created !");
                 }
-            }
-        });
-    }
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(createCollectionForm.toString());
+
+                // now move the selected collections under that one
+                if( moveSelection && newColId.length>0 && FlickrBrowserApp.currentSelection.count>0 ) {
+                    var iSel;
+                    for( iSel = 0; iSel < FlickrBrowserApp.currentSelection.count; ++iSel ) {
+                        var moveArgs = [];
+                        moveArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
+                        moveArgs.push([ "parent_collection_id", newColId ]);
+
+                        var flickrReplyMoveCollection = FlickrBrowserApp.callFlickr("flickr.collections.moveCollection", moveArgs);
+                        if( flickrReplyMoveCollection ) {
+                            flickrReplyMoveCollection.received.connect(function(response) {
+                                if(response && response.stat && response.stat === "ok")
+                                {
+                                    console.log("Collection moved !");
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
     }
 
     function clearValues() {

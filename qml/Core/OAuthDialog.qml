@@ -2,8 +2,9 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtWebKit 3.0
 import "OAuthCore.js" as OAuth
-import "FlickrAPI.js" as FlickrAPI
 import "DBAccess.js" as DBAccess
+
+import "../Singletons"
 
 Item {
     id: dialog
@@ -104,21 +105,22 @@ Item {
         }
     }
 
-    function checkFlickrToken(token) {
-        FlickrAPI.callFlickrMethod("flickr.auth.oauth.checkToken", null, "",
-                                   function (response) {
-                                       if( response.stat && response.stat === "ok" ) {
-                                           console.log("Token valid.");
-                                           dialog.state = "authorized";
-                                       }
-                                       else {
-                                           console.log("Token not valid. Requesting new token.");
-                                           dialog.state = "needNewToken";
-                                       }
-                                    });
+    function checkFlickrTokenReply(response) {
+        if( response.stat && response.stat === "ok" ) {
+            console.log("Token valid.");
+            dialog.state = "authorized";
+        }
+        else {
+            console.log("Token not valid. Requesting new token.");
+            dialog.state = "needNewToken";
+        }
     }
-
-
+    function checkFlickrToken(token) {
+        var flickrReply = FlickrBrowserApp.callFlickr("flickr.auth.oauth.checkToken", null);
+        if(flickrReply) {
+            flickrReply.received.connect(checkFlickrTokenReply);
+        }
+    }
 
     function getFlickrRequestToken() {
         //busyDialog.show = true;

@@ -2,15 +2,17 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Core"
+import "../Singletons"
 
 // Display the properties of a photoset.
 ColumnLayout {
     id: propertiesSet
 
-    Component.onCompleted: {
-        // Query Flickr to retrieve the informations on the photoset
-        FlickrAPI.callFlickrMethod("flickr.photosets.getInfo", [ [ "photoset_id", currentItemId ] ], propertiesSet.toString(), function(response) {
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
             if(response && response.photoset)
             {
                 nbPhotos = response.photoset.count_photos;
@@ -23,11 +25,11 @@ ColumnLayout {
                 var dateUpdateValue = new Date(response.photoset.date_update * 1000);
                 updateDate = dateUpdateValue.toLocaleString();
             }
-        });
+        }
     }
-    Component.onDestruction: {
-        // safe-guard: be sure the item was not deleted during this async call to Flickr
-        FlickrAPI.disableCallbacks(propertiesSet.toString());
+    Component.onCompleted: {
+        // Query Flickr to retrieve the informations on the photoset
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photosets.getInfo", [ [ "photoset_id", currentItemId ] ]);
     }
 
     property string title;

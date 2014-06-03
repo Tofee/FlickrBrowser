@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Core"
 import "../Singletons"
 import "../Utils" as Utils
 
@@ -17,9 +17,10 @@ BrowserPage {
         id: photosetModel;
     }
 
-    Component.onCompleted: {
-        // Query Flickr to retrieve the list of the photos
-        FlickrAPI.callFlickrMethod("flickr.photosets.getPhotos", [ [ "photoset_id", pageItemId ], [ "extras", "url_s, url_o" ] ], photosetGridPage.toString(), function(response) {
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
             if(response && response.photoset && response.photoset.photo)
             {
                 var i;
@@ -31,10 +32,11 @@ BrowserPage {
 
                 doJustifyFlow();
             }
-        });
+        }
     }
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(photosetGridPage.toString());
+    Component.onCompleted: {
+        // Query Flickr to retrieve the list of the photos
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photosets.getPhotos", [ [ "photoset_id", pageItemId ], [ "extras", "url_s, url_o" ] ]);
     }
 
     onWidthChanged: doJustifyFlow();
