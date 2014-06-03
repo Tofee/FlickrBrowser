@@ -3,6 +3,8 @@ pragma Singleton
 import QtQuick 2.0
 
 import "../Utils" as Utils
+import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Core"
 
 Item {
     id: flickrBrowserAppSingleton
@@ -49,7 +51,22 @@ Item {
     /*------ Contextual filter -------*/
     property alias contextualFilter: _contextualFilter
 
+    /*------ Flickr API call -------*/
+    function callFlickr(method, args) {
+        var reply = flickrReplyComponent.createObject(null); // no parent: it is only held by the "reply" variable
+        FlickrAPI.callFlickrMethod(method, args, "", function(response) {
+            reply.received(response); // emit signal
+            reply.destroy();
+        });
+        return reply;
+    }
+
     //////// private
+    Component {
+        id: flickrReplyComponent
+        FlickrReply {}
+    }
+
     ListModel {
         id: rootCollectionTreeModel
     }
