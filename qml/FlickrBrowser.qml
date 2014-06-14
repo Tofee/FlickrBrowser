@@ -50,39 +50,8 @@ Item {
     Component {
         id: loginPageComp
         LoginPage {
-            property bool collectionTreeRetrieved: false
-            property bool photosetListRetrieved: false
-
-            Connections {
-                target: FlickrBrowserApp
-                onCollectionTreeChanged: {
-                    collectionTreeRetrieved = true;
-                    if( collectionTreeRetrieved && photosetListRetrieved )flickrBrowserRoot.state = "logged";
-                }
-                onPhotosetListChanged: {
-                    photosetListRetrieved = true;
-                    if( collectionTreeRetrieved && photosetListRetrieved )flickrBrowserRoot.state = "logged";
-                }
-            }
-
-            property FlickrReply flickrReplyCollectionList;
-            property FlickrReply flickrReplyPhotosetList;
-            Connections {
-                target: flickrReplyCollectionList
-                onReceived: {
-                    FlickrBrowserApp.fillCollectionTreeModel(response.collections.collection);
-                }
-            }
-            Connections {
-                target: flickrReplyPhotosetList
-                onReceived: {
-                    FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
-                }
-            }
-
             onAuthorised: {
-                flickrReplyCollectionList = FlickrBrowserApp.callFlickr("flickr.collections.getTree", null);
-                flickrReplyPhotosetList = FlickrBrowserApp.callFlickr("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ]);
+                flickrBrowserRoot.state = "logged";
             }
         }
     }
@@ -201,6 +170,15 @@ Item {
         }
     }
 
+    property FlickrReply flickrReplyPhotosetList;
+    Connections {
+        target: flickrReplyPhotosetList
+        onReceived: {
+            FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
+        }
+    }
+
+
     states: [
         State {
             name: "login"
@@ -209,6 +187,11 @@ Item {
         State {
             name: "logged"
             PropertyChanges { target: loginLoader; sourceComponent: rootViewComp }
+            StateChangeScript {
+                script: {
+                    flickrReplyPhotosetList = FlickrBrowserApp.callFlickr("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ]);
+                }
+            }
         }
     ]
 

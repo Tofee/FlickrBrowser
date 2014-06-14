@@ -17,7 +17,7 @@ BrowserPage {
                 var stackView = mainPage.Stack.view;
                 stackView.navigationPath.push(text);
                 stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                properties: { pageModel: FlickrBrowserApp.collectionTreeModel } });
+                                properties: { pageItemId: "0" } });
             }
         }
         Button {
@@ -27,7 +27,7 @@ BrowserPage {
                 var stackView = mainPage.Stack.view;
                 stackView.navigationPath.push(text);
                 stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                properties: { pageModel: FlickrBrowserApp.photosetListModel } });
+                                properties: { pageItemId: "0" } });
             }
         }
 /*        Button {
