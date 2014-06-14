@@ -30,13 +30,22 @@ BrowserPage {
                                 properties: { pageModel: FlickrBrowserApp.photosetListModel } });
             }
         }
-        Button {
+/*        Button {
             width: 150; height: 150
             text: "Tags"
             onClicked: {
                 var stackView = mainPage.Stack.view;
                 stackView.navigationPath.push(text);
                 stackView.push({item: Qt.resolvedUrl("TagsPage.qml")});
+            }
+        }*/
+        Button {
+            width: 150; height: 150
+            text: "Tags Map"
+            onClicked: {
+                var stackView = mainPage.Stack.view;
+                stackView.navigationPath.push(text);
+                stackView.push({item: Qt.resolvedUrl("TagsMapPage.qml")});
             }
         }
     }
