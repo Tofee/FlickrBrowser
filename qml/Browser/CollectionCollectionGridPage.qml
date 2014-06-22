@@ -11,13 +11,9 @@ BrowserPage {
     pageModelType: "CollectionCollection"
     pageModel: ListModel {}
 
-    onRemoteModelChanged: {
-        if( itemId === pageItemId ) {
-            // Query Flickr to retrieve the list of the photos
-            flickrReply = FlickrBrowserApp.callFlickr("flickr.collections.getTree", [ [ "collection_id", pageItemId ] ] );
-        }
-    }
-    Component.onCompleted: {
+    onRemoteModelChanged: refreshModel();
+    Component.onCompleted: refreshModel();
+    function refreshModel() {
         // Query Flickr to retrieve the list of the photos
         flickrReply = FlickrBrowserApp.callFlickr("flickr.collections.getTree", [ [ "collection_id", pageItemId ] ] );
     }

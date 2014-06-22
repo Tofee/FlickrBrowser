@@ -12,13 +12,9 @@ BrowserPage {
     pageModel: ListModel {}
     property ListModel photosetListModel: FlickrBrowserApp.photosetListModel
 
-    onRemoteModelChanged: {
-        if( itemId === pageItemId && pageItemId !== "0" ) {
-            // Query Flickr to retrieve the list of the photos
-            flickrReply = FlickrBrowserApp.callFlickr("flickr.collections.getTree", [ [ "collection_id", pageItemId ] ] );
-        }
-    }
-    Component.onCompleted: {
+    onRemoteModelChanged: refreshModel();
+    Component.onCompleted: refreshModel();
+    function refreshModel() {
         if( pageItemId === "0" ) {
             pageModel = photosetListModel;
         }

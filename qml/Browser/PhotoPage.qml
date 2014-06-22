@@ -15,6 +15,13 @@ BrowserPage {
 
     property variant photoDetails;
 
+    onRemoteModelChanged: refreshModel();
+    Component.onCompleted: refreshModel();
+    function refreshModel() {
+        // Query Flickr to retrieve the list of the photos
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photos.getInfo", [ [ "photo_id", pageItemId ] ]);
+    }
+
     property FlickrReply flickrReply;
     Connections {
         target: flickrReply
@@ -22,10 +29,6 @@ BrowserPage {
             if(response)
                 photoDetails = response.photo;
         }
-    }
-    Component.onCompleted: {
-        // Query Flickr to retrieve the list of the photos
-        flickrReply = FlickrBrowserApp.callFlickr("flickr.photos.getInfo", [ [ "photo_id", pageItemId ] ]);
     }
 
     BusyIndicator {

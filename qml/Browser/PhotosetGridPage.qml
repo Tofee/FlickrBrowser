@@ -17,6 +17,13 @@ BrowserPage {
         id: photosetModel;
     }
 
+    onRemoteModelChanged: refreshModel();
+    Component.onCompleted: refreshModel();
+    function refreshModel() {
+        // Query Flickr to retrieve the list of the photos
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photosets.getPhotos", [ [ "photoset_id", pageItemId ], [ "extras", "url_s, url_o" ] ]);
+    }
+
     property FlickrReply flickrReply;
     Connections {
         target: flickrReply
@@ -33,10 +40,6 @@ BrowserPage {
                 doJustifyFlow();
             }
         }
-    }
-    Component.onCompleted: {
-        // Query Flickr to retrieve the list of the photos
-        flickrReply = FlickrBrowserApp.callFlickr("flickr.photosets.getPhotos", [ [ "photoset_id", pageItemId ], [ "extras", "url_s, url_o" ] ]);
     }
 
     onWidthChanged: doJustifyFlow();
