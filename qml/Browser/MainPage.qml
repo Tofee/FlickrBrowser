@@ -48,6 +48,15 @@ BrowserPage {
                 stackView.push({item: Qt.resolvedUrl("TagsMapPage.qml")});
             }
         }
+        Button {
+            width: 150; height: 150
+            text: "Search..."
+            onClicked: {
+                var stackView = mainPage.Stack.view;
+                stackView.navigationPath.push(text);
+                stackView.push({item: Qt.resolvedUrl("SearchPhotosPage.qml")});
+            }
+        }
     }
     Flow {
         anchors.fill: parent
