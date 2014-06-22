@@ -6,22 +6,18 @@ import QtQuick.Window 2.1
 
 import "Core/OAuthCore.js" as OAuth
 import "Core/DBAccess.js" as DBAccess
-import "Core/FlickrAPI.js" as FlickrAPI
 
 import "Singletons"
-import "Core" as Core
+import "Core"
 import "ContextPanel"
 import "Browser"
-
-Window {
-
-    width: 900
-    height: 550
 
 Item {
     id: flickrBrowserRoot
 
-    anchors.fill: parent
+    width: 900
+    height: 550
+
 /*
     HoverMenu {
         id: bottomHoverMenu
@@ -53,33 +49,9 @@ Item {
     // login page
     Component {
         id: loginPageComp
-        Core.LoginPage {
-            property bool collectionTreeRetrieved: false
-            property bool photosetListRetrieved: false
-
-            Connections {
-                target: FlickrBrowserApp
-                onCollectionTreeChanged: {
-                    collectionTreeRetrieved = true;
-                    if( collectionTreeRetrieved && photosetListRetrieved )flickrBrowserRoot.state = "logged";
-                }
-                onPhotosetListChanged: {
-                    photosetListRetrieved = true;
-                    if( collectionTreeRetrieved && photosetListRetrieved )flickrBrowserRoot.state = "logged";
-                }
-            }
-
+        LoginPage {
             onAuthorised: {
-                FlickrAPI.callFlickrMethod("flickr.collections.getTree", null, "", cb_collectionlist);
-                FlickrAPI.callFlickrMethod("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ], "", cb_photosetlist);
-            }
-
-            function cb_collectionlist(response) {
-                FlickrBrowserApp.fillCollectionTreeModel(response.collections.collection);
-            }
-
-            function cb_photosetlist(response) {
-                FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
+                flickrBrowserRoot.state = "logged";
             }
         }
     }
@@ -198,6 +170,15 @@ Item {
         }
     }
 
+    property FlickrReply flickrReplyPhotosetList;
+    Connections {
+        target: flickrReplyPhotosetList
+        onReceived: {
+            FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
+        }
+    }
+
+
     states: [
         State {
             name: "login"
@@ -206,6 +187,11 @@ Item {
         State {
             name: "logged"
             PropertyChanges { target: loginLoader; sourceComponent: rootViewComp }
+            StateChangeScript {
+                script: {
+                    flickrReplyPhotosetList = FlickrBrowserApp.callFlickr("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ]);
+                }
+            }
         }
     ]
 
@@ -221,5 +207,4 @@ Item {
         id: loginLoader
         anchors.fill: parent
     }
-}
 }

@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
+import "../Core"
 import "../Singletons"
 import "../Utils" as Utils
 
@@ -8,8 +9,39 @@ BrowserPage {
     id: collectionGridPage
 
     pageModelType: "CollectionCollection"
+    pageModel: ListModel {}
+
+    onRemoteModelChanged: refreshModel();
+    Component.onCompleted: refreshModel();
+    function refreshModel() {
+        // Query Flickr to retrieve the list of the photos
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.collections.getTree", [ [ "collection_id", pageItemId ] ] );
+    }
+
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
+            if(response && response.collections && response.collections.collection)
+            {
+                pageModel.clear();
+
+                var jsonArray = response.collections.collection;
+                if( pageItemId !== "0" && jsonArray.length === 1 ) {
+                    jsonArray = response.collections.collection[0].collection;
+                }
+                if( jsonArray ) {
+                    var i;
+                    for( i=0; i<jsonArray.length; i++ ) {
+                        pageModel.append(jsonArray[i]);
+                    }
+                }
+            }
+        }
+    }
 
     Utils.FlowList {
+        anchors.fill: parent
         id: flowList
 
         itemType: "collection"
@@ -18,7 +50,7 @@ BrowserPage {
         delegate:
             Utils.FlowListDelegate {
 
-                imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("images/collection_default_l.gif")
+                imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("../images/collection_default_l.gif")
                 textContent: getCollectionTitle();
 
                 imageFillMode: Image.PreserveAspectFit
@@ -55,12 +87,12 @@ BrowserPage {
                     if( myModelItem.collection ) {
                         stackView.navigationPath.push(myModelItem.title);
                         stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                        properties: {"pageModel": myModelItem.collection, "pageItemId": myModelItem.id}});
+                                        properties: {"pageItemId": myModelItem.id}});
                     }
                     else if( myModelItem.set ) {
                         stackView.navigationPath.push(myModelItem.title);
                         stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                        properties: {"pageModel": myModelItem.set, "pageItemId": myModelItem.id}});
+                                        properties: {"pageItemId": myModelItem.id}});
                     }
                 }
             }

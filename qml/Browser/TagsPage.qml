@@ -1,7 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Core"
+import "../Singletons"
 
 BrowserPage {
     id: tagsPage
@@ -13,28 +14,34 @@ BrowserPage {
         id: tagsListModel
     }
 
-    Component.onCompleted: {
-        // Query Flickr to retrieve the list of the photos
-        if( 1 ) {
-            FlickrAPI.callFlickrMethod("flickr.tags.getListUserRaw", null, tagsPage.toString(), function(response) {
-                if(response && response.who && response.who.tags)
-                {
-                    var i;
-                    var pts = tagCanvas.pointsOnSphere(response.who.tags.tag.length,tagCanvas.sphereRadius,tagCanvas.sphereRadius,tagCanvas.sphereRadius);
-                    if( response.who.tags.tag.length !== pts.length ) return;
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
+            if(response && response.who && response.who.tags)
+            {
+                var i;
+                var pts = tagCanvas.pointsOnSphere(response.who.tags.tag.length,tagCanvas.sphereRadius,tagCanvas.sphereRadius,tagCanvas.sphereRadius);
+                if( response.who.tags.tag.length !== pts.length ) return;
 
-                    for( i=0; i<response.who.tags.tag.length; i++ ) {
-                        var tagRawText = response.who.tags.tag[i].raw[0]._content;
-                        if( tagRawText[0] !== '#' ) {
-                            tagsListModel.append({ tag: tagRawText, pos: { x: pts[i][0], y: pts[i][1], z:  pts[i][2] } });
-                        }
+                for( i=0; i<response.who.tags.tag.length; i++ ) {
+                    var tagRawText = response.who.tags.tag[i].raw[0]._content;
+                    if( tagRawText[0] !== '#' ) {
+                        tagsListModel.append({ tag: tagRawText, pos: { x: pts[i][0], y: pts[i][1], z:  pts[i][2] } });
                     }
-
-                    tagCanvas.requestPaint();
                 }
-            });
+
+                tagCanvas.requestPaint();
+            }
+        }
+    }
+    Component.onCompleted: {
+        if( 1 ) {
+            // Query Flickr to retrieve the list of the photos
+            flickrReply = FlickrBrowserApp.callFlickr("flickr.tags.getListUserRaw", null);
         }
         else {
+            // Do a fake fill of the tags
             console.log("adding test tags");
             var i;
             var nbTags = 202;
@@ -45,9 +52,6 @@ BrowserPage {
 
             tagCanvas.requestPaint();
         }
-    }
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(tagsPage.toString());
     }
 
     TagCanvas {

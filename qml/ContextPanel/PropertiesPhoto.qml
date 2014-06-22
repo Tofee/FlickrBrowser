@@ -2,15 +2,17 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Core"
+import "../Singletons"
 
 // Display the properties of a photo.
 ColumnLayout {
     id: propertiesPhoto
 
-    Component.onCompleted: {
-        // Query Flickr to retrieve the informations on the photo
-        FlickrAPI.callFlickrMethod("flickr.photos.getInfo", [ [ "photo_id", currentItemId ] ], propertiesPhoto.toString(), function(response) {
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
             if(response && response.photo)
             {
                 title = response.photo.title._content;
@@ -32,11 +34,11 @@ ColumnLayout {
                     }
                 }
             }
-        });
+        }
     }
-    Component.onDestruction: {
-        // safe-guard: be sure the item was not deleted during this async call to Flickr
-        FlickrAPI.disableCallbacks(propertiesPhoto.toString());
+    Component.onCompleted: {
+        // Query Flickr to retrieve the informations on the photo
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photos.getInfo", [ [ "photo_id", currentItemId ] ]);
     }
 
     property string title;

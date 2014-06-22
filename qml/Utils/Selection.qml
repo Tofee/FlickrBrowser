@@ -17,7 +17,7 @@ QtObject {
         var nbItemsRemoved = 0;
         for (var i = Priv._selection.length - 1; i >= 0; i--) {
             var identical = true;
-            for( j in criterias ) {
+            for( var j in criterias ) {
                 if( Priv._selection[i][j] !== criterias[j] )
                 {
                     identical = false;

@@ -1,7 +1,8 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Core"
+import "../Singletons"
 
 BrowserPage {
     id: photoPage
@@ -14,15 +15,20 @@ BrowserPage {
 
     property variant photoDetails;
 
-    Component.onCompleted: {
+    onRemoteModelChanged: refreshModel();
+    Component.onCompleted: refreshModel();
+    function refreshModel() {
         // Query Flickr to retrieve the list of the photos
-        FlickrAPI.callFlickrMethod("flickr.photos.getInfo", [ [ "photo_id", pageItemId ] ], photoPage.toString(), function(response) {
-            if(response )
-                photoDetails = response.photo;
-        });
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photos.getInfo", [ [ "photo_id", pageItemId ] ]);
     }
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(photoPage.toString());
+
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
+            if(response)
+                photoDetails = response.photo;
+        }
     }
 
     BusyIndicator {

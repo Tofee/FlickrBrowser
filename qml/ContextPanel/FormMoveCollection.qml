@@ -2,9 +2,9 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
 import "AuthoringServices.js" as AuthoringServices
 
+import "../Core"
 import "../Singletons"
 
 Column {
@@ -24,17 +24,17 @@ Column {
                 moveArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
                 moveArgs.push([ "parent_collection_id", underColId ]);
 
-                FlickrAPI.callFlickrMethod("flickr.collections.moveCollection", moveArgs, moveCollectionForm.toString(), function(response) {
-                    if(response && response.stat && response.stat === "ok")
-                    {
-                        console.log("Collection moved !");
-                    }
-                });
+                var flickrReplyMoveCollection = FlickrBrowserApp.callFlickr("flickr.collections.moveCollection", moveArgs);
+                if( flickrReplyMoveCollection ) {
+                    flickrReplyMoveCollection.received.connect(function(response) {
+                        if(response && response.stat && response.stat === "ok")
+                        {
+                            console.log("Collection moved !");
+                        }
+                    });
+                }
             }
         }
-    }
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(moveCollectionForm.toString());
     }
 
     function clearValues() {

@@ -3,42 +3,48 @@ pragma Singleton
 import QtQuick 2.0
 
 import "../Utils" as Utils
+import "../Core/FlickrAPI.js" as FlickrAPI
+import "../Core"
 
 Item {
     id: flickrBrowserAppSingleton
 
-    /*------ Global lists: collects and photosets -------*/
-    signal collectionTreeChanged();
+    /*------ Global list: photosets -------*/
     signal photosetListChanged();
-
-    property alias collectionTreeModel: rootCollectionTreeModel
-    property alias photosetListModel: rootPhotosetListModel
-
-    function fillCollectionTreeModel(jsonArray) {
-        rootCollectionTreeModel.clear();
-
-        if( jsonArray ) {
-            var i;
-            for( i=0; i<jsonArray.length; i++ ) {
-                rootCollectionTreeModel.append(jsonArray[i]);
-            }
-        }
-
-        collectionTreeChanged();
-    }
+    property alias photosetListModel: _photosetListModel
 
     function fillPhotosetListModel(jsonArray) {
-        rootPhotosetListModel.clear();
+        _photosetListModel.clear();
 
         if( jsonArray ) {
             var i;
             for( i=0; i<jsonArray.length; i++ ) {
-                rootPhotosetListModel.append(jsonArray[i]);
+                _photosetListModel.append(jsonArray[i]);
             }
         }
 
         photosetListChanged();
     }
+
+    /*------ Global list: tags -------*/
+    signal tagListChanged();
+    property alias tagListModel: _tagListModel
+
+    function fillTagListModel(jsonArray) {
+        _tagListModel.clear();
+
+        if( jsonArray ) {
+            var i;
+            for( i=0; i<jsonArray.length; i++ ) {
+                _tagListModel.append(jsonArray[i]);
+            }
+        }
+
+        tagListChanged();
+    }
+
+    /*------ Change signal ----------*/
+    signal remoteModelChanged(string itemId);
 
     /*------ Current selection -------*/
     property alias currentSelection: _currentSelection
@@ -49,12 +55,28 @@ Item {
     /*------ Contextual filter -------*/
     property alias contextualFilter: _contextualFilter
 
-    //////// private
-    ListModel {
-        id: rootCollectionTreeModel
+    /*------ Flickr API call -------*/
+    function callFlickr(method, args) {
+        var reply = flickrReplyComponent.createObject(null); // no parent: it is only held by the "reply" variable
+        FlickrAPI.callFlickrMethod(method, args, function(response) {
+            reply.received(response); // emit signal
+            reply.destroy();
+        });
+        return reply;
     }
+
+    //////// private
+    Component {
+        id: flickrReplyComponent
+        FlickrReply {}
+    }
+
     ListModel {
-        id: rootPhotosetListModel
+        id: _photosetListModel
+    }
+
+    ListModel {
+        id: _tagListModel
     }
 
     Utils.Selection {

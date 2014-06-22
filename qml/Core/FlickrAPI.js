@@ -3,39 +3,16 @@
 .import "DBAccess.js" as DBAccess
 .import "OAuthCore.js" as OAuth
 
-var authorizedCallbacks = []
-
-function authorizeCallbacks(objectName) {
-    if( authorizedCallbacks.indexOf(objectName) < 0 ) {
-        authorizedCallbacks.push(objectName);
-    }
-}
-
-function disableCallbacks(objectName) {
-    for(var idxCB = authorizedCallbacks.length-1; idxCB >= 0; --idxCB ) {
-        if( authorizedCallbacks[idxCB] === objectName ) {
-            authorizedCallbacks.splice(idxCB, 1);
-            break;
-        }
-    }
-}
-
-function isAlive(objectName) {
-    return (objectName.length === 0 || authorizedCallbacks.indexOf(objectName) >= 0);
-}
-
-function callFlickrMethod(method, args, objectName, callback) {
-    authorizeCallbacks(objectName);
-
+function callFlickrMethod(method, args, callback) {
     var doc = new XMLHttpRequest();
     doc.onreadystatechange = function() {
         if (doc.readyState === XMLHttpRequest.DONE) {
-            if( callback && isAlive(objectName) ) {
+            if( callback ) {
                 var responseJSON = {};
                 if( doc.responseText.length>0 && doc.responseText[0] === '{' )
                     responseJSON = JSON.parse(doc.responseText);
                 else
-                    console.log(doc.responseText);
+                    console.warn("ERROR calling " + method + ": " + doc.responseText);
                 callback(responseJSON);
             }
         }

@@ -2,9 +2,9 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
 import "AuthoringServices.js" as AuthoringServices
 
+import "../Core"
 import "../Singletons"
 
 Column {
@@ -21,17 +21,17 @@ Column {
                 var removeArgs = [];
                 removeArgs.push([ "photoset_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
 
-                FlickrAPI.callFlickrMethod("flickr.photosets.delete", removeArgs, removePhotosetForm.toString(), function(response) {
-                    if(response && response.stat && response.stat === "ok")
-                    {
-                        console.log("Photoset removed !");
-                    }
-                });
+                var flickrReplyRemovePhotoset = FlickrBrowserApp.callFlickr("flickr.photosets.delete", removeArgs);
+                if( flickrReplyRemovePhotoset ) {
+                    flickrReplyRemovePhotoset.received.connect(function(response) {
+                        if(response && response.stat && response.stat === "ok")
+                        {
+                            console.log("Photoset removed !");
+                        }
+                    });
+                }
             }
         }
-    }
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(removePhotosetForm.toString());
     }
 
     onCancelTriggered: {

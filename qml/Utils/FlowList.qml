@@ -1,10 +1,13 @@
 import QtQuick 2.0
 
+import "../Singletons"
+
 Flickable {
     id: flickableItem
 
     property alias model: flowRepeater.model
     property alias delegate: flowRepeater.delegate
+    property alias spacing: flowItem.spacing
     property string itemType;
 
     contentWidth: width
@@ -38,10 +41,10 @@ Flickable {
                 FlickrBrowserApp.currentSelection.addToSelection({ "type": flickableItem.itemType, "id": itemModel.id, "object": itemModel });
             }
         }
-        else if( mouse.modifiers & Qt.ShiftModifier ) {
+        else if( modifiers & Qt.ShiftModifier ) {
             if( _lastSelectionIndex >= 0 && _lastSelectionIndex != index ) {
                 var incr = (_lastSelectionIndex > index) ? -1 : 1;
-                for( var idxSel = collectionsGridView.lastSelectionIndex; idxSel !== index+incr; idxSel += incr ) {
+                for( var idxSel = _lastSelectionIndex; idxSel !== index+incr; idxSel += incr ) {
                     FlickrBrowserApp.currentSelection.addToSelection({ "type": flickableItem.itemType, "id": pageModel.get(idxSel).id, "object": pageModel.get(idxSel) });
                 }
             }

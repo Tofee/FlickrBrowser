@@ -2,9 +2,9 @@ import QtQuick 2.0
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.1
 
-import "../Core/FlickrAPI.js" as FlickrAPI
 import "AuthoringServices.js" as AuthoringServices
 
+import "../Core"
 import "../Singletons"
 
 Column {
@@ -24,17 +24,17 @@ Column {
                 removeArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
                 removeArgs.push([ "recursive", recursive?"true":"false" ]);
 
-                FlickrAPI.callFlickrMethod("flickr.collections.delete", removeArgs, removeCollectionForm.toString(), function(response) {
-                    if(response && response.stat && response.stat === "ok")
-                    {
-                        console.log("Collection removed !");
-                    }
-                });
+                var flickrReplyRemoveCollection = FlickrBrowserApp.callFlickr("flickr.collections.delete", removeArgs);
+                if( flickrReplyRemoveCollection ) {
+                    flickrReplyRemoveCollection.received.connect(function(response) {
+                        if(response && response.stat && response.stat === "ok")
+                        {
+                            console.log("Collection removed !");
+                        }
+                    });
+                }
             }
         }
-    }
-    Component.onDestruction: {
-        FlickrAPI.disableCallbacks(removeCollectionForm.toString());
     }
 
     function clearValues() {
