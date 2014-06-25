@@ -3,9 +3,10 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 
+import "Singletons"
 import "Browser"
 import "ContextPanel"
-import "Singletons"
+import "Map"
 
 /************ Main View ********************
 
@@ -109,7 +110,7 @@ HideableSplitView {
                 }
             }
 
-            Item {
+            MapView {
                 visible: mapArea.contentVisible && height >= 250
                 anchors.fill: parent
             }
