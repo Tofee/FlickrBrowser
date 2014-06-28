@@ -46,6 +46,7 @@ Rectangle {
     property string url: "http://otile1.mqcdn.com/tiles/1.0.0/map/%(zoom)d/%(x)d/%(y)d.png"
     property int status: PageStatus.Active
     signal drag // signals that map-drag has been detected
+    signal viewpointChanged
     property bool needsUpdate: false
     transform: Rotation {
         angle: 0
@@ -83,6 +84,14 @@ Rectangle {
         }
     }
 
+    function getLonLatBBox() {
+        var start = getCoordFromScreenpoint(0,0);
+        var end = getCoordFromScreenpoint(pinchmap.width,pinchmap.height);
+        return [ Math.min(start[1], end[1]),
+                 Math.min(start[0], end[0]),
+                 Math.max(start[1], end[1]),
+                 Math.max(start[0], end[0]) ];
+    }
 
     function setZoomLevel(z) {
         setZoomLevelPoint(z, pinchmap.width/2, pinchmap.height/2);
@@ -145,6 +154,8 @@ Rectangle {
         var l = getCenter()
         longitude = l[1]
         latitude = l[0]
+
+        viewpointChanged();
     }
 
     function requestUpdate() {
@@ -241,7 +252,7 @@ Rectangle {
     }
 
     function sinh(aValue) {
-        return (Math.pow(Math.E, aValue)-Math.pow(Math.E, -aValue))/2;
+        return (Math.exp(aValue)-Math.exp(-aValue))/2;
     }
 
     function num2deg(xtile, ytile) {
@@ -353,13 +364,12 @@ Rectangle {
             id: markerDisplayContainer
             Repeater {
                 id: markerDisplay
-                /*
+
                 delegate: Marker {
-                    coordinate: model.coordinate
-                    targetPoint: getMappointFromCoord(model.coordinate.lat, model.coordinate.lon)
-                    verticalSpacing: model.numSimilar
+                    title: model.id
+                    targetPoint: getMappointFromCoord(model.latitude, model.longitude)
                     z: 2000
-                }*/
+                }
             }
         }
     }

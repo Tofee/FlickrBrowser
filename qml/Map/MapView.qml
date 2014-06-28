@@ -2,9 +2,40 @@ import QtQuick 2.0
 import QtPositioning 5.2
 import "functions.js" as F
 
+import "../Singletons"
+import "../Core"
+
 Item {
     id: tabMap
     property int buttonSize: 72
+
+    property ListModel photosOnMap: ListModel {}
+
+    function refreshModel() {
+        // Query Flickr to retrieve the list of the photos
+        var searchParams = [];
+        var bbox = pinchmap.getLonLatBBox();
+        searchParams.push( [ "bbox", bbox.toString() ] );
+        searchParams.push( [ "user_id", "me" ] ); // only search our photos
+        searchParams.push( [ "extras", "geo" ] );
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photos.search", searchParams);
+    }
+
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
+            if(response && response.photos && response.photos.photo)
+            {
+                photosOnMap.clear();
+
+                var i;
+                for( i=0; i<response.photos.photo.length; i++ ) {
+                    photosOnMap.append(response.photos.photo[i]);
+                }
+            }
+        }
+    }
 
     QtObject {
         id: gps
@@ -34,6 +65,8 @@ Item {
         height: parent.height
         zoomLevel: 11
 
+        markerModel: photosOnMap
+
         clip: true
 
         Connections {
@@ -61,17 +94,9 @@ Item {
             repeat: false
         }
 
-        /*
-        onLatitudeChanged: {
-            settings.mapPositionLat = latitude;
+        onViewpointChanged: {
+            refreshModel();
         }
-        onLongitudeChanged: {
-            settings.mapPositionLon = longitude;
-        }
-        onZoomLevelChanged: {
-            settings.mapZoom = pinchmap.zoomLevel;
-        }
-        */
 
         // Rotating the map for fun and profit.
         // angle: -compass.azimuth
