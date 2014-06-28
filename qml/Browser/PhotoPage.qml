@@ -28,6 +28,7 @@ BrowserPage {
         onReceived: {
             if(response)
                 photoDetails = response.photo;
+            fitToArea();
         }
     }
 
@@ -108,12 +109,12 @@ BrowserPage {
             }
 
             onDoubleClicked: fitToArea();
-
-            function fitToArea() {
-                var center = Qt.point(flick.contentX + flick.width/2, flick.contentY + flick.height/2);
-                flick.resizeContent(flick.width, flick.height, center);
-                flick.returnToBounds();
-            }
         }
+    }
+
+    function fitToArea() {
+        var center = Qt.point(flick.contentX + flick.width/2, flick.contentY + flick.height/2);
+        flick.resizeContent(flick.width, flick.height, center);
+        flick.returnToBounds();
     }
 }
