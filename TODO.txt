@@ -1,0 +1,83 @@
+"Collections"
+1 List of (root) collections (containing other collections)
+  * Filter (KO)
+  * Properties OK
+  * Create collection...  ("Cancel" not working, "OK" to be tested)
+  * Move collection... ("Cancel" not working, "OK" to be tested)
+  * Delete collection... ("Cancel" not working, "OK" to be tested)
+2 List of collections (containing albums)
+  * Filter (KO)
+  * Properties OK
+  * Create collection...  ("Cancel" not working, "OK" to be tested)
+  * Move collection... ("Cancel" not working, "OK" to be tested)
+  * Delete collection... ("Cancel" not working, "OK" to be tested)
+3 List of albums
+  * Filter (KO)
+  * Properties OK
+  * Create collection tree from albums...  --> to be removed!
+  * Create collection... ("Cancel" not working, "OK" to be tested)
+  * Delete album... ("Cancel" not working, "OK" to be tested)
+4 List of photos
+  * Filter (KO)
+  * Properties OK
+  * No action !
+5 Photo
+  * Filter (doing nothing)
+  * Properties OK
+  * Zoom OK, Pan OK
+  * No action !
+  
+"Albums"
+1 List of albums
+  * Filter (KO)
+  * Properties OK
+  * Create collection tree from albums...  --> to be removed!
+  * Create collection... ("Cancel" not working, "OK" to be tested)
+  * Delete album... ("Cancel" not working, "OK" to be tested)
+2 List of photos
+  * Filter (KO)
+  * Properties OK
+  * No action !
+3 Photo
+  * Filter (doing nothing)
+  * Properties OK
+  * Zoom OK, Pan OK
+  * No action !
+
+"Tags Map"
+1 Tags
+  * Filter (KO)
+  * Very slow to appear
+  * Properties KO
+  * No action !
+  
+"Search..."
+1 Search form
+  * Filter (doing nothing)
+  * Not complete
+2 Search result (list of photos)
+  * Filter (KO)
+  * Properties OK
+  * No action !
+3 Photo
+  * Filter (doing nothing)
+  * Properties OK
+  * Zoom OK, Pan OK
+  * No action !
+
+"Map"
+1 List of photos
+  * No action on tags
+  * Tags not grouped when at same position
+
+  
+--> TODO summary:
+ - Fix filter
+ - Hide filter when useless (Photo, Search form, root view
+ - Hide form when hit "Cancel"
+ - Test forms (click on "OK")
+ - Remove "Create collection tree from albums" action
+ - Add actions for list of photos: add to (new) album, add tag
+ - Check that local model is refreshed when remote Flickr storage is changed
+ 
+ 
