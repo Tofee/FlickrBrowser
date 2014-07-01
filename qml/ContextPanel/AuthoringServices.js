@@ -9,8 +9,8 @@ function fillModelWithCollections(listModel, collectionTreeRoot, forPhotoset, de
 
     console.assert(collectionTreeRoot, "collectionTreeRoot undefined!");
 
-    for( var i=0; i<collectionTreeRoot.count; ++i ) {
-        var item = collectionTreeRoot.get(i);
+    for( var i=0; i<collectionTreeRoot.length; ++i ) {
+        var item = collectionTreeRoot[i];
         if( item[forbiddenContent] &&
             item[forbiddenContent].count > 0 )
             continue;
@@ -24,7 +24,7 @@ function fillModelWithCollections(listModel, collectionTreeRoot, forPhotoset, de
 
         // recurse
         if( item[subContent] &&
-            item[subContent].count > 0 )
+            item[subContent].length > 0 )
             fillModelWithCollections(listModel, item[subContent], forPhotoset, depth+1);
     }
 }

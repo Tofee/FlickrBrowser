@@ -35,6 +35,27 @@ Column {
         }
     }
 
+    property alias listCollections: collectionPlacementCombo.model
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
+            if(response && response.collections && response.collections.collection)
+            {
+                listCollections.append({ colId: "", title: "Root" });
+                AuthoringServices.fillModelWithCollections(listCollections, response.collections.collection, false, 0);
+            }
+        }
+    }
+
+    onVisibleChanged: {
+        listCollections.clear(); // clear in all case
+        if( visible ) {
+            // Query Flickr to retrieve the list of the collections
+            flickrReply = FlickrBrowserApp.callFlickr("flickr.collections.getTree", [ [ "collection_id", "0" ] ] );
+        }
+    }
+
     function clearValues() {
         collectionPlacementCombo.currentIndex = 0;
     }
@@ -56,17 +77,7 @@ Column {
         width: parent.width
         Layout.fillWidth: true
 
-        model: ListModel {
-            id: listCollections
-        }
-
-        onVisibleChanged: {
-            listCollections.clear(); // clear in all case
-            if( visible && FlickrBrowserApp.collectionTreeModel ) {
-                listCollections.append({ colId: "", title: "Root" });
-                AuthoringServices.fillModelWithCollections(listCollections, FlickrBrowserApp.collectionTreeModel, false, 0);
-            }
-        }
+        model: ListModel {}
 
         textRole: "title"
     }
