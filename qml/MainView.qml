@@ -35,6 +35,7 @@ HideableSplitView {
 
         id: browserAndMapSplitView
         orientation: Qt.Vertical
+        contentVisible: false // hide Map at startup
 
         /********** browser **************/
         Item {
@@ -87,7 +88,8 @@ HideableSplitView {
             color: "grey"
 
             // manage width of the panel depending on its visibility
-            Layout.minimumHeight: 250
+            height: 0
+            Layout.minimumHeight: 0
             property bool contentVisible: browserAndMapSplitView.contentVisible
 
             SequentialAnimation {
