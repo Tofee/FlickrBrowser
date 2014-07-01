@@ -13,18 +13,6 @@ Column {
 
     ExclusiveGroup { id: actionExclusiveGroup }
     Button {
-        id: createCollectionTreeButton
-        width: parent.width
-        exclusiveGroup: actionExclusiveGroup
-
-        text: "Create collection tree from albums..."
-        checkable: true
-    }
-    FormCreatePhotosetCollectionTree {
-        width: parent.width
-        visible: createCollectionTreeButton.checked
-    }
-    Button {
         id: createCollectionButton
         width: parent.width
         exclusiveGroup: actionExclusiveGroup
