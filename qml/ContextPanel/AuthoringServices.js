@@ -7,6 +7,8 @@ function fillModelWithCollections(listModel, collectionTreeRoot, forPhotoset, de
     var forbiddenContent = forPhotoset ? "collection" : "set";
     var subContent =       forPhotoset ? "set" : "collection";
 
+    console.assert(collectionTreeRoot, "collectionTreeRoot undefined!");
+
     for( var i=0; i<collectionTreeRoot.count; ++i ) {
         var item = collectionTreeRoot.get(i);
         if( item[forbiddenContent] &&

@@ -10,8 +10,6 @@ import "../Singletons"
 Column {
     id: moveCollectionForm
 
-    property string moveDestination: collectionPlacementCombo.model.get(collectionPlacementCombo.currentIndex).colId
-
     signal cancelTriggered();
     signal okTriggered();
 
@@ -45,7 +43,7 @@ Column {
         clearValues();
     }
     onOkTriggered: {
-        moveCollectionSelection(moveDestination);
+        moveCollectionSelection(collectionPlacementCombo.model.get(collectionPlacementCombo.currentIndex).colId);
         clearValues();
     }
 
@@ -60,13 +58,12 @@ Column {
 
         model: ListModel {
             id: listCollections
+        }
 
-            ListElement {
-                colId: ""
-                title: "Root"
-            }
-
-            Component.onCompleted: {
+        onVisibleChanged: {
+            listCollections.clear(); // clear in all case
+            if( visible && FlickrBrowserApp.collectionTreeModel ) {
+                listCollections.append({ colId: "", title: "Root" });
                 AuthoringServices.fillModelWithCollections(listCollections, FlickrBrowserApp.collectionTreeModel, false, 0);
             }
         }
