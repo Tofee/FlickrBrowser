@@ -27,7 +27,7 @@ BrowserPage {
                 pageModel.clear();
 
                 var jsonArray = response.collections.collection;
-                if( pageItemId !== "0" && jsonArray.length === 1 ) {
+                if( pageItemId !== "0" ) {
                     jsonArray = response.collections.collection[0].collection;
                 }
                 if( jsonArray ) {
