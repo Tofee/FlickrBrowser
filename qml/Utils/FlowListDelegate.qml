@@ -27,7 +27,7 @@ Item {
     Connections {
         target: FlickrBrowserApp.contextualFilter
         onFilterChanged: {
-            delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.title });
+            delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.textContent });
         }
     }
     Component.onCompleted: {
