@@ -13,8 +13,8 @@ Column {
     property alias collectionName: collectionNameField.text
     property alias moveSelection: moveSelectionCheckBox.checked
 
-    signal cancelTriggered();
-    signal okTriggered();
+    signal clearForm();
+    signal validateForm();
 
     function createCollection(title, moveSelection, underColId) {
         if( title.length === 0 ) return;
@@ -62,10 +62,10 @@ Column {
         moveSelection = false;
     }
 
-    onCancelTriggered: {
+    onClearForm: {
         clearValues();
     }
-    onOkTriggered: {
+    onValidateForm: {
         createCollection(collectionName, moveSelection, FlickrBrowserApp.currentShownPage.pageItemId);
         clearValues();
     }
@@ -85,17 +85,10 @@ Column {
         width: parent.width
         text: "Move selection to new collection"
     }
-    RowLayout {
-        width: parent.width
-        Button {
-            Layout.alignment: Qt.AlignLeft
-            text: "Cancel"
-            onClicked: createCollectionForm.cancelTriggered();
-        }
-        Button {
-            Layout.alignment: Qt.AlignRight
-            text: "OK"
-            onClicked: createCollectionForm.okTriggered();
-        }
+
+    Button {
+        anchors.right: parent.right
+        text: "Create"
+        onClicked: formLoader.item.validateForm();
     }
 }

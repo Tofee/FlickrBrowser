@@ -10,8 +10,8 @@ import "../Singletons"
 Column {
     id: moveCollectionForm
 
-    signal cancelTriggered();
-    signal okTriggered();
+    signal clearForm();
+    signal validateForm();
 
     function moveCollectionSelection(underColId) {
         // now move the selected collections under that one
@@ -60,10 +60,11 @@ Column {
         collectionPlacementCombo.currentIndex = 0;
     }
 
-    onCancelTriggered: {
+
+    onClearForm: {
         clearValues();
     }
-    onOkTriggered: {
+    onValidateForm: {
         moveCollectionSelection(collectionPlacementCombo.model.get(collectionPlacementCombo.currentIndex).colId);
         clearValues();
     }
@@ -81,18 +82,11 @@ Column {
 
         textRole: "title"
     }
-    RowLayout {
-        width: parent.width
-        Button {
-            Layout.alignment: Qt.AlignLeft
-            text: "Cancel"
-            onClicked: moveCollectionForm.cancelTriggered();
-        }
-        Button {
-            Layout.alignment: Qt.AlignRight
-            text: "OK"
-            onClicked: moveCollectionForm.okTriggered();
-        }
+
+    Button {
+        anchors.right: parent.right
+        text: "Move"
+        onClicked: moveCollectionForm.validateForm();
     }
 }
 

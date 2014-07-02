@@ -4,36 +4,23 @@ import QtQuick.Layouts 1.1
 
 import "../Core"
 import "../Singletons"
+import "../Utils"
 
 // Display the properties of a collection of photosets.
 Column {
-    move: Transition {
-        NumberAnimation { properties: "y"; duration: 300 }
-    }
-
     ExclusiveGroup { id: actionExclusiveGroup }
-    Button {
-        id: createCollectionButton
+    AuthoringForm {
         width: parent.width
-        exclusiveGroup: actionExclusiveGroup
 
-        text: "Create collection..."
-        checkable: true
-    }
-    FormCreatePhotosetCollection {
-        width: parent.width
-        visible: createCollectionButton.checked
-    }
-    Button {
-        id: removePhotosetButton
-        width: parent.width
+        buttonText: "Create collection..."
+        formComponent: FormCreatePhotosetCollection {}
         exclusiveGroup: actionExclusiveGroup
-
-        text: "Delete album..."
-        checkable: true
     }
-    FormRemovePhotoset {
+    AuthoringForm {
         width: parent.width
-        visible: removePhotosetButton.checked
+
+        buttonText: "Delete album..."
+        formComponent: FormRemovePhotoset {}
+        exclusiveGroup: actionExclusiveGroup
     }
 }

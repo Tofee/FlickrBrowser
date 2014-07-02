@@ -12,8 +12,8 @@ Column {
 
     property alias recursive: recursiveCheckBox.checked
 
-    signal cancelTriggered();
-    signal okTriggered();
+    signal clearForm();
+    signal validateForm();
 
     function removeCollectionSelection(recursive) {
         // now move the selected collections under that one
@@ -41,10 +41,10 @@ Column {
         recursive = false;
     }
 
-    onCancelTriggered: {
+    onClearForm: {
         clearValues();
     }
-    onOkTriggered: {
+    onValidateForm: {
         removeCollectionSelection(recursive);
         clearValues();
     }
@@ -59,18 +59,11 @@ Column {
         width: parent.width
         text: "Delete recursively"
     }
-    RowLayout {
-        width: parent.width
-        Button {
-            Layout.alignment: Qt.AlignLeft
-            text: "Cancel"
-            onClicked: removeCollectionForm.cancelTriggered();
-        }
-        Button {
-            Layout.alignment: Qt.AlignRight
-            text: "OK"
-            onClicked: removeCollectionForm.okTriggered();
-        }
+
+    Button {
+        anchors.right: parent.right
+        text: "Delete"
+        onClicked: removeCollectionForm.validateForm();
     }
 }
 

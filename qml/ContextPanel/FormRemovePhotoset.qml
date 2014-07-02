@@ -10,8 +10,8 @@ import "../Singletons"
 Column {
     id: removePhotosetForm
 
-    signal cancelTriggered();
-    signal okTriggered();
+    signal clearForm();
+    signal validateForm();
 
     function removeCollectionSelection() {
         // now move the selected collections under that one
@@ -34,9 +34,9 @@ Column {
         }
     }
 
-    onCancelTriggered: {
+    onClearForm: {
     }
-    onOkTriggered: {
+    onValidateForm: {
         removeCollectionSelection();
     }
 
@@ -44,18 +44,11 @@ Column {
         width: parent.width
         text: "This will permanently remove the selected photoset !"
     }
-    RowLayout {
-        width: parent.width
-        Button {
-            Layout.alignment: Qt.AlignLeft
-            text: "Cancel"
-            onClicked: removePhotosetForm.cancelTriggered();
-        }
-        Button {
-            Layout.alignment: Qt.AlignRight
-            text: "OK"
-            onClicked: removePhotosetForm.okTriggered();
-        }
+
+    Button {
+        anchors.right: parent.right
+        text: "Delete"
+        onClicked: removePhotosetForm.validateForm();
     }
 }
 
