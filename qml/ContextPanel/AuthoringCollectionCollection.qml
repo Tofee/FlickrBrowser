@@ -26,6 +26,13 @@ Column {
     AuthoringForm {
         width: parent.width
 
+        buttonText: "Create icon..."
+        formComponent: FormCreateIconCollection {}
+        exclusiveGroup: actionExclusiveGroup
+    }
+    AuthoringForm {
+        width: parent.width
+
         buttonText: "Delete collection..."
         formComponent: FormRemoveCollection {}
         exclusiveGroup: actionExclusiveGroup
