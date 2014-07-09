@@ -11,6 +11,13 @@ BrowserPage {
     pageModelType: "CollectionCollection"
     pageModel: ListModel {}
 
+    Utils.SortedListModel {
+        id: sortedModel
+        originModel: pageModel
+        sortAscendent: true
+        sortKey: "title"
+    }
+
     onRemoteModelChanged: refreshModel();
     Component.onCompleted: refreshModel();
     function refreshModel() {
@@ -36,6 +43,8 @@ BrowserPage {
                         pageModel.append(jsonArray[i]);
                     }
                 }
+
+                sortedModel.syncModel();
             }
         }
     }
@@ -46,7 +55,7 @@ BrowserPage {
 
         itemType: "collection"
 
-        model: pageModel
+        model: sortedModel
         delegate:
             Utils.FlowListDelegate {
 
@@ -58,7 +67,7 @@ BrowserPage {
                 imageWidth: 150
                 textPixelSize: 10
 
-                isSelected: (pageModel.get(index).selected) ? true : false
+                isSelected: (sortedModel.get(index).selected) ? true : false
 
                 function getCollectionTitle() {
                     // We have to be careful here:
@@ -66,7 +75,7 @@ BrowserPage {
                     // exist at all in the model, and therefore
                     // not being defined as an attached property
                     // in the current context
-                    var myModelItem = pageModel.get(index)
+                    var myModelItem = sortedModel.get(index)
                     if( myModelItem.collection ) {
                         return myModelItem.title + "(" + myModelItem.collection.count + ")"
                     }
@@ -82,7 +91,7 @@ BrowserPage {
                 }
                 onDoubleClicked: {
                     var stackView = collectionGridPage.Stack.view;
-                    var myModelItem = pageModel.get(index)
+                    var myModelItem = sortedModel.get(index)
 
                     if( myModelItem.collection ) {
                         stackView.navigationPath.push(myModelItem.title);

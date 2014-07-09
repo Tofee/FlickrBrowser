@@ -32,7 +32,7 @@ Flickable {
 
     onSelected: {
         var nbSelected = FlickrBrowserApp.currentSelection.count;
-        var itemModel = pageModel.get(index);
+        var itemModel = model.get(index);
         if( modifiers & Qt.ControlModifier ) {
             if( itemModel.selected ) {
                 FlickrBrowserApp.currentSelection.removeFromSelection({ "type": flickableItem.itemType, "id": itemModel.id });
@@ -45,7 +45,7 @@ Flickable {
             if( _lastSelectionIndex >= 0 && _lastSelectionIndex != index ) {
                 var incr = (_lastSelectionIndex > index) ? -1 : 1;
                 for( var idxSel = _lastSelectionIndex; idxSel !== index+incr; idxSel += incr ) {
-                    FlickrBrowserApp.currentSelection.addToSelection({ "type": flickableItem.itemType, "id": pageModel.get(idxSel).id, "object": pageModel.get(idxSel) });
+                    FlickrBrowserApp.currentSelection.addToSelection({ "type": flickableItem.itemType, "id": model.get(idxSel).id, "object": model.get(idxSel) });
                 }
             }
         }
