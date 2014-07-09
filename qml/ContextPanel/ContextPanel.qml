@@ -17,7 +17,7 @@ Item {
             left: parent.left
             top: parent.top
         }
-        width: filterButton.width
+        width: filterButton.width + 5
 
         Utils.VerticalCheckButton {
             id: filterButton

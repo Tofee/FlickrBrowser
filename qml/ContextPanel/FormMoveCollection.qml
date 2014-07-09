@@ -10,10 +10,8 @@ import "../Singletons"
 Column {
     id: moveCollectionForm
 
-    property string moveDestination: collectionPlacementCombo.model.get(collectionPlacementCombo.currentIndex).colId
-
-    signal cancelTriggered();
-    signal okTriggered();
+    signal clearForm();
+    signal validateForm();
 
     function moveCollectionSelection(underColId) {
         // now move the selected collections under that one
@@ -37,15 +35,37 @@ Column {
         }
     }
 
+    property alias listCollections: collectionPlacementCombo.model
+    property FlickrReply flickrReply;
+    Connections {
+        target: flickrReply
+        onReceived: {
+            if(response && response.collections && response.collections.collection)
+            {
+                listCollections.append({ colId: "", title: "Root" });
+                AuthoringServices.fillModelWithCollections(listCollections, response.collections.collection, false, 0);
+            }
+        }
+    }
+
+    onVisibleChanged: {
+        listCollections.clear(); // clear in all case
+        if( visible ) {
+            // Query Flickr to retrieve the list of the collections
+            flickrReply = FlickrBrowserApp.callFlickr("flickr.collections.getTree", [ [ "collection_id", "0" ] ] );
+        }
+    }
+
     function clearValues() {
         collectionPlacementCombo.currentIndex = 0;
     }
 
-    onCancelTriggered: {
+
+    onClearForm: {
         clearValues();
     }
-    onOkTriggered: {
-        moveCollectionSelection(moveDestination);
+    onValidateForm: {
+        moveCollectionSelection(collectionPlacementCombo.model.get(collectionPlacementCombo.currentIndex).colId);
         clearValues();
     }
 
@@ -58,33 +78,15 @@ Column {
         width: parent.width
         Layout.fillWidth: true
 
-        model: ListModel {
-            id: listCollections
-
-            ListElement {
-                colId: ""
-                title: "Root"
-            }
-
-            Component.onCompleted: {
-                AuthoringServices.fillModelWithCollections(listCollections, FlickrBrowserApp.collectionTreeModel, false, 0);
-            }
-        }
+        model: ListModel {}
 
         textRole: "title"
     }
-    RowLayout {
-        width: parent.width
-        Button {
-            Layout.alignment: Qt.AlignLeft
-            text: "Cancel"
-            onClicked: moveCollectionForm.cancelTriggered();
-        }
-        Button {
-            Layout.alignment: Qt.AlignRight
-            text: "OK"
-            onClicked: moveCollectionForm.okTriggered();
-        }
+
+    Button {
+        anchors.right: parent.right
+        text: "Move"
+        onClicked: moveCollectionForm.validateForm();
     }
 }
 

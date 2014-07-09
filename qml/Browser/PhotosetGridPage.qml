@@ -17,6 +17,13 @@ BrowserPage {
         id: photosetModel;
     }
 
+    Utils.SortedListModel {
+        id: sortedModel
+        originModel: pageModel
+        sortAscendent: true
+        sortKey: "title"
+    }
+
     onRemoteModelChanged: refreshModel();
     Component.onCompleted: refreshModel();
     function refreshModel() {
@@ -37,6 +44,7 @@ BrowserPage {
                     photosetModel.append(currentPhoto);
                 }
 
+                sortedModel.syncModel();
                 doJustifyFlow();
             }
         }
@@ -50,8 +58,8 @@ BrowserPage {
         var maxWidth = photosetGridPage.width;
         var wantedHeight = 320;
         var currentWidth=0;
-        for(idx_endLine=0; idx_endLine<photosetModel.count; idx_endLine++) {
-            var currentPhoto = photosetModel.get(idx_endLine);
+        for(idx_endLine=0; idx_endLine<sortedModel.count; idx_endLine++) {
+            var currentPhoto = sortedModel.get(idx_endLine);
             var currentHeightScaling = wantedHeight / currentPhoto.height_s;
             currentWidth += photosetGridPage.spacing*2 + currentPhoto.width_s * currentHeightScaling;
             if( currentWidth > maxWidth ) {
@@ -61,7 +69,7 @@ BrowserPage {
                 // change the scaling
                 var j;
                 for( j=idx_startLine; j<=idx_endLine; j++ ) {
-                    photosetModel.get(j).scaling=widthScaling * (wantedHeight / photosetModel.get(j).height_s);
+                    sortedModel.get(j).scaling=widthScaling * (wantedHeight / sortedModel.get(j).height_s);
                 }
 
                 // reset counters
@@ -79,7 +87,7 @@ BrowserPage {
         itemType: "photo"
         spacing: photosetGridPage.spacing
 
-        model: photosetModel
+        model: sortedModel
         delegate:
             Utils.FlowListDelegate {
                 id: delegateItem

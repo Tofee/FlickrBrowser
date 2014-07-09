@@ -4,48 +4,37 @@ import QtQuick.Layouts 1.1
 
 import "../Core"
 import "../Singletons"
+import "../Utils"
 
 // Display the properties of a collection.
 Column {
-    move: Transition {
-        NumberAnimation { properties: "y"; duration: 300 }
-    }
-
     ExclusiveGroup { id: actionExclusiveGroup }
-    Button {
-        id: createCollectionButton
+    AuthoringForm {
         width: parent.width
-        exclusiveGroup: actionExclusiveGroup
 
-        text: "Create collection..."
-        checkable: true
-    }
-    FormCreateCollection {
-        width: parent.width
-        visible: createCollectionButton.checked
-    }
-    Button {
-        id: moveCollectionButton
-        width: parent.width
+        buttonText: "Create collection..."
+        formComponent: FormCreateCollection {}
         exclusiveGroup: actionExclusiveGroup
+    }
+    AuthoringForm {
+        width: parent.width
 
-        text: "Move selection..."
-        checkable: true
-    }
-    FormMoveCollection {
-        width: parent.width
-        visible: moveCollectionButton.checked
-    }
-    Button {
-        id: removeCollectionButton
-        width: parent.width
+        buttonText: "Move selection..."
+        formComponent: FormMoveCollection {}
         exclusiveGroup: actionExclusiveGroup
-
-        text: "Delete collection..."
-        checkable: true
     }
-    FormRemoveCollection {
+    AuthoringForm {
         width: parent.width
-        visible: removeCollectionButton.checked
+
+        buttonText: "Create icon..."
+        formComponent: FormCreateIconCollection {}
+        exclusiveGroup: actionExclusiveGroup
+    }
+    AuthoringForm {
+        width: parent.width
+
+        buttonText: "Delete collection..."
+        formComponent: FormRemoveCollection {}
+        exclusiveGroup: actionExclusiveGroup
     }
 }

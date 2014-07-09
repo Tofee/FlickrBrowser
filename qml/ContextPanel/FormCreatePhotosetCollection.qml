@@ -12,8 +12,8 @@ Column {
 
     property alias collectionName: collectionNameField.text
 
-    signal cancelTriggered();
-    signal okTriggered();
+    signal clearForm();
+    signal validateForm();
 
     function createCollection(title, moveSelection, underColId) {
         if( title.length === 0 ) return;
@@ -64,10 +64,10 @@ Column {
         collectionName = "";
     }
 
-    onCancelTriggered: {
+    onClearForm: {
         clearValues();
     }
-    onOkTriggered: {
+    onValidateForm: {
         createCollection(collectionName, moveSelection, FlickrBrowserApp.currentShownPage.pageItemId);
         clearValues();
     }
@@ -82,17 +82,10 @@ Column {
             Layout.fillWidth: true
         }
     }
-    RowLayout {
-        width: parent.width
-        Button {
-            Layout.alignment: Qt.AlignLeft
-            text: "Cancel"
-            onClicked: createPhotosetCollectionForm.cancelTriggered();
-        }
-        Button {
-            Layout.alignment: Qt.AlignRight
-            text: "OK"
-            onClicked: createPhotosetCollectionForm.okTriggered();
-        }
+
+    Button {
+        anchors.right: parent.right
+        text: "Create"
+        onClicked: createPhotosetCollectionForm.validateForm();
     }
 }

@@ -12,11 +12,21 @@ BrowserPage {
     pageModel: ListModel {}
     property ListModel photosetListModel: FlickrBrowserApp.photosetListModel
 
+    Utils.SortedListModel {
+        id: sortedModel
+        originModel: pageModel
+        sortAscendent: true
+        sortKey: "title._content"
+    }
+
     onRemoteModelChanged: refreshModel();
     Component.onCompleted: refreshModel();
     function refreshModel() {
         if( pageItemId === "0" ) {
             pageModel = photosetListModel;
+            sortedModel.syncModel();
+            // subscribe to changes of global photoset list
+            FlickrBrowserApp.photosetListChanged.connect(refreshModel);
         }
         else {
             // Query Flickr to retrieve the list of the photos
@@ -43,6 +53,7 @@ BrowserPage {
                     }
                 }
 
+                sortedModel.syncModel();
                 smoothFillerTimer.i = 0; // trigger the filler timer
             }
         }
@@ -57,10 +68,10 @@ BrowserPage {
         id: smoothFillerTimer
         property int i: 0
         interval: 10
-        running: i<pageModel.count
+        running: i<sortedModel.count
         onTriggered: {
-            var photoSetInfos = getPhotosetInfos(pageModel.get(i).id);
-            photoSetInfos.originalObject = pageModel.get(i);
+            var photoSetInfos = getPhotosetInfos(sortedModel.get(i).id);
+            photoSetInfos.originalObject = sortedModel.get(i);
             smoothlyFilledModel.append(photoSetInfos);
             i++;
         }
