@@ -56,10 +56,15 @@ Item {
     property alias contextualFilter: _contextualFilter
 
     /*------ Flickr API call -------*/
+    signal flickrActionLaunched(QtObject reply);
+
     function callFlickr(method, args) {
-        var reply = flickrReplyComponent.createObject(null); // no parent: it is only held by the "reply" variable
+        var reply = flickrReplyComponent.createObject(null,  // no parent: it is only held by the "reply" variable
+                         {"flickrMethod": method, "flickrArgs": args});
+        flickrBrowserAppSingleton.flickrActionLaunched(reply);
         FlickrAPI.callFlickrMethod(method, args, function(response) {
             reply.received(response); // emit signal
+            reply.completed();
             reply.destroy();
         });
         return reply;
