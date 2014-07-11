@@ -98,7 +98,7 @@ BrowserPage {
                 imageHeight: height_s * scaling
                 imageWidth: width_s * scaling
                 imageFillMode: Image.PreserveAspectFit
-                isSelected: (pageModel.get(index).selected) ? true : false
+                isSelected: (sortedModel.get(index).selected) ? true : false
                 textPixelSize: 14
 
                 showText: false
@@ -145,7 +145,7 @@ BrowserPage {
                                     properties: {"pageItemId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
 
                     FlickrBrowserApp.currentSelection.clear();
-                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": photosetModel.get(index) });
+                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": sortedModel.get(index) });
                 }
             }
     }
