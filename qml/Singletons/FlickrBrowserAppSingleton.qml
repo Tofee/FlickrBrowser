@@ -9,6 +9,9 @@ import "../Core"
 Item {
     id: flickrBrowserAppSingleton
 
+    /*------ Logout signal ----------------*/
+    signal logout();
+
     /*------ Global list: photosets -------*/
     signal photosetListChanged();
     property alias photosetListModel: _photosetListModel

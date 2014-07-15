@@ -4,6 +4,17 @@
 
 var cachedToken = new Object;
 
+function clearToken() {
+    console.log("Saving...")
+    var db = Sql.LocalStorage.openDatabaseSync("FlickrBrowserDB", "1.0", "The FlickrBrowser DB", 10);
+    db.transaction(function(tx) {
+        tx.executeSql('CREATE TABLE IF NOT EXISTS FlickrToken(token TEXT, secret TEXT)');
+        tx.executeSql('DELETE FROM FlickrToken');
+
+        cachedToken = new Object;
+    });
+}
+
 function saveToken(token, secret) {
     console.log("Saving...")
     var db = Sql.LocalStorage.openDatabaseSync("FlickrBrowserDB", "1.0", "The FlickrBrowser DB", 10);
