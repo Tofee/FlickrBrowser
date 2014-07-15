@@ -32,6 +32,8 @@ Column {
                 {
                     newColId = response.collection.id;
                     console.log("Collection created !");
+
+                    FlickrBrowserApp.remoteModelChanged(underColId);
                 }
 
                 // now move the selected collections under that one
@@ -48,6 +50,8 @@ Column {
                                 if(response && response.stat && response.stat === "ok")
                                 {
                                     console.log("Collection moved !");
+
+                                    FlickrBrowserApp.remoteModelChanged(newColId);
                                 }
                             });
                         }
@@ -89,6 +93,6 @@ Column {
     Button {
         anchors.right: parent.right
         text: "Create"
-        onClicked: formLoader.item.validateForm();
+        onClicked: validateForm();
     }
 }
