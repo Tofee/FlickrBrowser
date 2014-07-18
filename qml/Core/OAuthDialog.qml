@@ -19,7 +19,7 @@ Item {
             }
             else {
                 console.log("No token found. Requesting new token.");
-                dialog.state = "needNewToken";
+                dialog.state = "signout";
             }
         });
     }
@@ -31,6 +31,14 @@ Item {
     states: [
         State {
             name: "checkToken"
+        },
+        State {
+            name: "signout"
+            StateChangeScript {
+                script: {
+                    webViewSignout.url = "https://www.flickr.com/logout.gne";
+                }
+            }
         },
         State {
             name: "needNewToken"
@@ -60,29 +68,46 @@ Item {
 
     BusyIndicator {
         anchors.centerIn: parent;
-        running: dialog.state !== "needNewToken"
+        running: dialog.state !== "needNewToken" && dialog.state !== "signout"
     }
     Flickable {
         id: webFlicker
 
-        visible: dialog.state === "needNewToken"
+        visible: (dialog.state === "needNewToken" || dialog.state === "signout")
 
         anchors { fill: parent; topMargin: 50; leftMargin: 10; rightMargin: 10; bottomMargin: 10 }
-        contentWidth: webView.width
-        contentHeight: webView.height
+        contentWidth: 800
+        contentHeight: 1280
         boundsBehavior: Flickable.DragOverBounds
         clip: true
 
         WebView {
-            id: webView
+            id: webViewSignin
 
             width: 800
             height: 1280
 
-            opacity:(webView.progress < 1) ? 0 : 1
+            visible: dialog.state === "needNewToken"
+            opacity:(webViewSignin.progress < 1) ? 0 : 1
             onUrlChanged: {
-                console.log(webView.url.toString());
+                console.log(webViewSignin.url.toString());
                 checkUrlForToken();
+            }
+
+            Behavior on opacity { PropertyAnimation { properties: "opacity"; duration: 500 } }
+        }
+        WebView {
+            id: webViewSignout
+
+            width: 800
+            height: 1280
+
+            visible: dialog.state === "signout"
+
+            opacity:(webViewSignout.progress < 1) ? 0 : 1
+            onUrlChanged: {
+                console.log(webViewSignout.url.toString());
+                dialog.state = "needNewToken";
             }
 
             Behavior on opacity { PropertyAnimation { properties: "opacity"; duration: 500 } }
@@ -95,7 +120,7 @@ Item {
     property string _flickrRequestSecret
 
     function checkUrlForToken() {
-        var url = webView.url.toString();
+        var url = webViewSignin.url.toString();
         if (/oauth_verifier=/.test(url)) {
             var flickrVerifier = url.split("=")[2].split("&")[0];
             getFlickrAccessToken(flickrVerifier); // authorization agreement detected, exchange the request token against an access token
@@ -134,7 +159,7 @@ Item {
                     _flickrRequestToken = tSplit[1].split('=')[1];
                     _flickrRequestSecret = tSplit[2].split('=')[1];
                     // go to the authorization page
-                    webView.url = "https://www.flickr.com/services/oauth/authorize?perms=write&oauth_token=" + _flickrRequestToken;
+                    webViewSignin.url = "https://www.flickr.com/services/oauth/authorize?perms=write&oauth_token=" + _flickrRequestToken;
                 }
                 else {
                     console.error(qsTr("Unable to obtain flickr request token"));

@@ -71,7 +71,7 @@ BrowserPage {
         running: i<sortedModel.count
         onTriggered: {
             var photoSetInfos = getPhotosetInfos(sortedModel.get(i).id);
-            photoSetInfos.originalObject = sortedModel.get(i);
+            //photoSetInfos.originalObject = sortedModel.get(i);
             smoothlyFilledModel.append(photoSetInfos);
             i++;
         }
@@ -105,7 +105,7 @@ BrowserPage {
                 imageHeight: 180
                 imageWidth: 180
                 imageFillMode: Image.PreserveAspectCrop
-                isSelected: originalObject.selected ? true : false
+                isSelected: (smoothlyFilledModel.get(index).selected) ? true : false
                 textPixelSize: 14
 
                 onClicked: {

@@ -28,6 +28,8 @@ Column {
                         if(response && response.stat && response.stat === "ok")
                         {
                             console.log("Collection moved !");
+
+                            FlickrBrowserApp.remoteModelChanged(FlickrBrowserApp.currentShownPage.pageItemId);
                         }
                     });
                 }

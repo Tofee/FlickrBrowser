@@ -13,7 +13,7 @@ Column {
     signal clearForm();
     signal validateForm();
 
-    function createIconCollectionSelection(recursive) {
+    function createIconCollectionSelection() {
         if( FlickrBrowserApp.currentSelection.count>0 ) {
             var iSel;
             for( iSel = 0; iSel < FlickrBrowserApp.currentSelection.count; ++iSel ) {
@@ -37,14 +37,13 @@ Column {
     }
 
     function clearValues() {
-        recursive = false;
     }
 
     onClearForm: {
         clearValues();
     }
     onValidateForm: {
-        createIconCollectionSelection(recursive);
+        createIconCollectionSelection();
         clearValues();
     }
 

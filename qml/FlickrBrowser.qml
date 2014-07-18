@@ -64,6 +64,13 @@ Item {
             FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
         }
     }
+    Connections {
+        target: FlickrBrowserApp
+        onLogout: {
+            DBAccess.clearToken();
+            flickrBrowserRoot.state = "login";
+        }
+    }
 
 
     states: [

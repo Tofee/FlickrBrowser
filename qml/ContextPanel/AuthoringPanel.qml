@@ -1,7 +1,4 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
-import QtQuick.Controls.Styles 1.1
-import QtQuick.Layouts 1.1
 
 import "../Singletons"
 
@@ -21,9 +18,8 @@ flickr.collections.moveCollection Required collection_id, Required parent_collec
 flickr.collections.editMeta Optional collection_id, Optional description, Optional title
 */
 
-Item {
-    height: propertiesLoader.height
-
+Column {
+    id: root
     property string pageModelType: FlickrBrowserApp.currentShownPage.pageModelType
     Loader {
         id: propertiesLoader
@@ -37,5 +33,9 @@ Item {
             propertiesLoader.source = Qt.resolvedUrl("Authoring" + pageModelType + ".qml");
             propertiesLoader.active = true;
         }
+    }
+
+    AuthoringActionsList {
+        width: root.width
     }
 }

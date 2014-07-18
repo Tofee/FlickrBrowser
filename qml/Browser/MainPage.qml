@@ -1,7 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 
 import "../Singletons"
+import "../Utils"
 
 BrowserPage {
     id: mainPage
@@ -10,8 +12,9 @@ BrowserPage {
 
     VisualItemModel {
         id: itemModel
-        Button {
+        CategoryButton {
             width: 150; height: 150
+            iconSource: Qt.resolvedUrl("../images/collections-tree.png");
             text: "Collections"
             onClicked: {
                 var stackView = mainPage.Stack.view;
@@ -20,8 +23,9 @@ BrowserPage {
                                 properties: { pageItemId: "0" } });
             }
         }
-        Button {
+        CategoryButton {
             width: 150; height: 150
+            iconSource: Qt.resolvedUrl("../images/albums.png");
             text: "Albums"
             onClicked: {
                 var stackView = mainPage.Stack.view;
@@ -39,8 +43,9 @@ BrowserPage {
                 stackView.push({item: Qt.resolvedUrl("TagsPage.qml")});
             }
         }*/
-        Button {
+        CategoryButton {
             width: 150; height: 150
+            iconSource: Qt.resolvedUrl("../images/tag.png");
             text: "Tags Map"
             onClicked: {
                 var stackView = mainPage.Stack.view;
@@ -48,8 +53,9 @@ BrowserPage {
                 stackView.push({item: Qt.resolvedUrl("TagsMapPage.qml")});
             }
         }
-        Button {
+        CategoryButton {
             width: 150; height: 150
+            iconSource: Qt.resolvedUrl("../images/search.png");
             text: "Search..."
             onClicked: {
                 var stackView = mainPage.Stack.view;
@@ -60,6 +66,7 @@ BrowserPage {
     }
     Flow {
         anchors.fill: parent
+        spacing: 2
         Repeater {
             model: itemModel
         }

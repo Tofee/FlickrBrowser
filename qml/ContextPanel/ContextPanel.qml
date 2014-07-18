@@ -22,14 +22,17 @@ Item {
         Utils.VerticalCheckButton {
             id: filterButton
             text: "Filter"
+            checked: true
         }
         Utils.VerticalCheckButton {
             id: propertiesButton
             text: "Properties"
+            checked: true
         }
         Utils.VerticalCheckButton {
             id: editionButton
-            text: "Edition"
+            text: "Actions"
+            checked: true
         }
     }
 

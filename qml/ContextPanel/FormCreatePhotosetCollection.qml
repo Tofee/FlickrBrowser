@@ -15,7 +15,7 @@ Column {
     signal clearForm();
     signal validateForm();
 
-    function createCollection(title, moveSelection, underColId) {
+    function createCollection(title, underColId) {
         if( title.length === 0 ) return;
 
         var createArgs = [];
@@ -31,6 +31,8 @@ Column {
                 {
                     newColId = response.collection.id;
                     console.log("Collection created !");
+
+                    FlickrBrowserApp.remoteModelChanged(underColId);
                 }
 
                 // now move add the selected sets under that one
@@ -52,6 +54,8 @@ Column {
                             if(response && response.stat && response.stat === "ok")
                             {
                                 console.log("Sets added to the new collection !");
+
+                                FlickrBrowserApp.remoteModelChanged(newColId);
                             }
                         });
                     }
@@ -68,7 +72,7 @@ Column {
         clearValues();
     }
     onValidateForm: {
-        createCollection(collectionName, moveSelection, FlickrBrowserApp.currentShownPage.pageItemId);
+        createCollection(collectionName, FlickrBrowserApp.currentShownPage.pageItemId);
         clearValues();
     }
 
