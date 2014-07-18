@@ -43,6 +43,9 @@ function checkToken(cb) {
                 cachedToken.secret = rs.rows.item(0).secret
             }
 
+            //console.debug("token = " + cachedToken.token);
+            //console.debug("secret = " + cachedToken.secret);
+
             cb(cachedToken);
         });
     }

@@ -11,7 +11,16 @@ Item {
 
     property string title : qsTr("Authorisation For Flickr")
 
-    Component.onCompleted: {
+    signal checkToken()
+    signal signout()
+    signal needNewToken()
+    signal authorized()
+
+    state: "undefined"
+
+    onCheckToken: {
+        dialog.state = "checkToken"
+
         DBAccess.checkToken(function (tmp) {
             if( tmp && tmp.token ) {
                 console.log("Token already existing. Checking token...");
@@ -19,44 +28,24 @@ Item {
             }
             else {
                 console.log("No token found. Requesting new token.");
-                dialog.state = "signout";
+                dialog.signout();
             }
         });
     }
 
-    signal authorised
+    onSignout: {
+        dialog.state = "signout";
+        webViewSignout.url = "https://www.flickr.com/logout.gne";
+    }
 
-    state: "checkToken"
+    onNeedNewToken: {
+        dialog.state = "needNewToken";
+        getFlickrRequestToken();
+    }
 
-    states: [
-        State {
-            name: "checkToken"
-        },
-        State {
-            name: "signout"
-            StateChangeScript {
-                script: {
-                    webViewSignout.url = "https://www.flickr.com/logout.gne";
-                }
-            }
-        },
-        State {
-            name: "needNewToken"
-            StateChangeScript {
-                script: {
-                    getFlickrRequestToken();
-                }
-            }
-        },
-        State {
-            name: "authorized"
-            StateChangeScript {
-                script: {
-                    dialog.authorised();
-                }
-            }
-        }
-    ]
+    onAuthorized: {
+        dialog.state = "authorized";
+    }
 
     Text {
         id: titleText
@@ -107,7 +96,7 @@ Item {
             opacity:(webViewSignout.progress < 1) ? 0 : 1
             onUrlChanged: {
                 console.log(webViewSignout.url.toString());
-                dialog.state = "needNewToken";
+                dialog.needNewToken();
             }
 
             Behavior on opacity { PropertyAnimation { properties: "opacity"; duration: 500 } }
@@ -133,11 +122,11 @@ Item {
     function checkFlickrTokenReply(response) {
         if( response.stat && response.stat === "ok" ) {
             console.log("Token valid.");
-            dialog.state = "authorized";
+            dialog.authorized();
         }
         else {
             console.log("Token not valid. Requesting new token.");
-            dialog.state = "needNewToken";
+            dialog.needNewToken();
         }
     }
     function checkFlickrToken(token) {
@@ -187,7 +176,7 @@ Item {
                     var token = tSplit[1].split('=')[1];
                     var secret = tSplit[2].split('=')[1];
                     DBAccess.saveToken(token, secret);
-                    dialog.state = "authorized";
+                    dialog.authorized();
                 }
                 else {
                     messages.displayMessage(qsTr("Unable to obtain flickr access token"));

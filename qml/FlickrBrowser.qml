@@ -45,7 +45,8 @@ Item {
     Component {
         id: loginPageComp
         LoginPage {
-            onAuthorised: {
+            Component.onCompleted: checkToken();
+            onAuthorized: {
                 flickrBrowserRoot.state = "logged";
             }
         }
