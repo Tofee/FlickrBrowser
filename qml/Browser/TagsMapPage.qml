@@ -12,9 +12,7 @@ BrowserPage {
     pageModel: tagsListModel
     pageModelType: "Tags"
 
-    ListModel {
-        id: fullListTags
-    }
+    property variant _tmpFullListTags;
 
     ListModel {
         id: tagsListModel
@@ -31,10 +29,7 @@ BrowserPage {
         onReceived: {
             if(response && response.who && response.who.tags)
             {
-                var tagArray = response.who.tags.tag;
-                for( var i=0; i<tagArray.length; i++ ) {
-                    fullListTags.append({ tag: tagArray[i].raw[0]._content, weight: 1, flickrTag: String(tagArray[i].clean) });
-                }
+                _tmpFullListTags = response.who.tags.tag;
 
                 // Now, query Flickr to retrieve the list of the tags with count of photos
                 flickrReplyTagsCount = FlickrBrowserApp.callFlickr("flickr.tags.getListUserPopular", [ [ "count", "-1" ] ]);
@@ -45,21 +40,18 @@ BrowserPage {
     Connections {
         target: flickrReplyTagsCount
         onReceived: {
-            if(response && response.who && response.who.tags)
+            if(response && response.who && response.who.tags && _tmpFullListTags)
             {
                 var tagArray = response.who.tags.tag;
                 for( var i=0; i<tagArray.length; i++ ) {
-                    var tagItem = fullListTags.get(i);
-                    tagItem.weight = parseInt(tagArray[i].count);
-
-                    // As we are looping on all those tags, take the occasion to add the non-artificial
-                    // tags to the final list
-                    if( tagItem.tag[0] !== '#' ) {
-                        tagsListModel.append({ tag: tagItem.tag, weight: tagItem.weight, flickrTag: tagItem.flickrTag });
+                    var tagWeight = parseInt(tagArray[i].count);
+                    if( tagWeight > 1 ) { // avoid adding non significant tags
+                        tagsListModel.append({ tag: _tmpFullListTags[i].raw[0]._content, weight: tagWeight, flickrTag: tagArray[i]._content });
                     }
                 }
             }
 
+            console.log("number of tags in list: " + tagsListModel.count);
             console.log("before refreshMap..." + Date());
             refreshMap();
             console.log("after refreshMap..." + Date());
@@ -74,7 +66,7 @@ BrowserPage {
             // Do a fake fill of the tags
             console.log("adding test tags");
             var i;
-            var nbTags = 202;
+            var nbTags = 249;
             for( i=0; i < nbTags; i++ ) {
                 tagsListModel.append({ tag: ("Tag " + i), weight: 1.0 + 50*Math.random() });
             }
