@@ -30,6 +30,7 @@ function callFlickrMethod(method, args, callback) {
             var oauthData = OAuth.createOAuthHeader("flickr", "GET", "https://api.flickr.com/services/rest/", credentials, null, parametersWithArgs);
             doc.open("GET", oauthData.url);
             doc.setRequestHeader("Content-Encoding", "UTF-8");
+            doc.setRequestHeader("Accept-Encoding", "gzip, deflate");
             doc.setRequestHeader("Authorization", oauthData.header);
             doc.send();
         }
