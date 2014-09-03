@@ -17,6 +17,17 @@ BrowserPage {
 
     ListModel {
         id: searchPhotosResultModel;
+
+        // taken from Utils/SortedListModel.qml
+        function getValuesForProperty(prop) {
+            var ret = [];
+            for( var i=0; i<searchPhotosResultModel.count; i++ ) {
+                var obj = searchPhotosResultModel.get(i);
+                ret.push(obj[prop]);
+            }
+
+            return ret;
+        }
     }
 
     onRemoteModelChanged: refreshModel();
@@ -136,7 +147,7 @@ BrowserPage {
                     var stackView = searchPhotosResultGridPage.Stack.view;
                     stackView.navigationPath.push(title);
                     stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                    properties: {"pageItemId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
+                                    properties: {"pageItemId": id, "photosList": searchPhotosResultModel.getValuesForProperty("id")}});
 
                     FlickrBrowserApp.currentSelection.clear();
                     FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": searchPhotosResultModel.get(index) });

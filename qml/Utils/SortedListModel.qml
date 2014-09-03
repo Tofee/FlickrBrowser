@@ -30,4 +30,14 @@ ListModel {
         _array.sort(function(a,b) { return _compare(_getDescendantProp(a,sortedModel.sortKey),_getDescendantProp(b,sortedModel.sortKey),sortedModel.sortAscendent?1:-1) });
         _array.forEach(function(item) { sortedModel.append(item) });
     }
+
+    function getValuesForProperty(prop) {
+        var ret = [];
+        for( var i=0; i<sortedModel.count; i++ ) {
+            var obj = sortedModel.get(i);
+            ret.push(obj[prop]);
+        }
+
+        return ret;
+    }
 }

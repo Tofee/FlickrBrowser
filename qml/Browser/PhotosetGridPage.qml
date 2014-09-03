@@ -142,7 +142,8 @@ BrowserPage {
                     var stackView = photosetGridPage.Stack.view;
                     stackView.navigationPath.push(title);
                     stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                    properties: {"pageItemId": id, "photoUrl": url_o, "photoHeight": height_o, "photoWidth": width_o}});
+                                    properties: {"pageItemId": id,
+                                                 "photosList": sortedModel.getValuesForProperty("id")}});
 
                     FlickrBrowserApp.currentSelection.clear();
                     FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": sortedModel.get(index) });

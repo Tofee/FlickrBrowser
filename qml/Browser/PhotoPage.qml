@@ -9,28 +9,48 @@ BrowserPage {
 
     pageModelType: "Photo"
 
-    property string photoUrl;
-    property real photoHeight;
-    property real photoWidth;
+    property url photoUrl: "";
+    property real photoHeight: 100;
+    property real photoWidth: 100;
 
-    property variant photoDetails;
+    // this is the list of photos to navigate into.
+    // it could be the content of an album, the result of a search, photos associated to a tag...
+    property variant photosList: [ pageItemId ];
 
+    onPageItemIdChanged: {
+        FlickrBrowserApp.currentSelection.clear();
+        FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": pageItemId, "object": null });
+
+        refreshModel();
+    }
     onRemoteModelChanged: refreshModel();
     Component.onCompleted: refreshModel();
     function refreshModel() {
-        // Query Flickr to retrieve the list of the photos
-        flickrReply = FlickrBrowserApp.callFlickr("flickr.photos.getInfo", [ [ "photo_id", pageItemId ] ]);
+        // Query Flickr to update the informations on the photo
+        flickrReply = FlickrBrowserApp.callFlickr("flickr.photos.getSizes", [ [ "photo_id", pageItemId ] ]);
     }
 
     property FlickrReply flickrReply;
     Connections {
         target: flickrReply
         onReceived: {
-            if(response)
-                photoDetails = response.photo;
+            if(response && response.sizes && response.sizes.size )
+            {
+                var sizeArray = response.sizes.size;
+                for( var i = sizeArray.length-1; i >= 0; --i ) { // "Original" is very likely to be the last item in the array
+                    if( sizeArray[i].label === "Original" ) {
+                        photoUrl = sizeArray[i].source;
+                        photoHeight = sizeArray[i].height;
+                        photoWidth = sizeArray[i].width;
+                        break;
+                    }
+                }
+            }
             fitToArea();
         }
     }
+
+    property int _indexInPhotosList: photosList.indexOf(pageItemId)
 
     BusyIndicator {
         anchors.centerIn: parent; running: originalImage.status != Image.Ready
@@ -111,10 +131,62 @@ BrowserPage {
             onDoubleClicked: fitToArea();
         }
     }
+    // add an overlay over the flickable image, for the navigation between images
+    Item {
+        anchors.fill: flick
+
+        Image {
+            visible: _indexInPhotosList>0
+            opacity: prevMouseArea.containsMouse ? 1.0 : 0.1
+            source: Qt.resolvedUrl("../images/photo-prev-icon.png");
+
+            Behavior on opacity { NumberAnimation { duration: 100 } }
+
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: 71
+
+            fillMode: Image.PreserveAspectFit
+
+            MouseArea {
+                id: prevMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onClicked: pageItemId = photosList[_indexInPhotosList-1];
+            }
+        }
+        Image {
+            visible: _indexInPhotosList<photosList.length-1
+            opacity: nextMouseArea.containsMouse ? 1.0 : 0.1
+            source: Qt.resolvedUrl("../images/photo-next-icon.png");
+
+            Behavior on opacity { NumberAnimation { duration: 100 } }
+
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: 71
+
+            fillMode: Image.PreserveAspectFit
+
+            MouseArea {
+                id: nextMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onClicked: pageItemId = photosList[_indexInPhotosList+1];
+            }
+        }
+    }
 
     function fitToArea() {
         var center = Qt.point(flick.contentX + flick.width/2, flick.contentY + flick.height/2);
         flick.resizeContent(flick.width, flick.height, center);
         flick.returnToBounds();
+    }
+
+    function _getNextPhoto() {
     }
 }
