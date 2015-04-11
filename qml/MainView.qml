@@ -150,6 +150,8 @@ HideableSplitView {
         ContextPanel {
             visible: contextPanel.contentVisible && width >= 250
             anchors.fill: parent
+
+            isMapActive: browserAndMapSplitView.contentVisible
         }
     }
 }

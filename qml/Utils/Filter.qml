@@ -1,27 +1,34 @@
 import QtQuick 2.0
 
 QtObject {
-    signal filterChanged(string filter)
+    signal filterChanged(variant filter)
 
-    function setFilter(text) {
-        _filter = text;
+    function setFilter(key, text) {
+        _filter[key] = text;
+        filterChanged(_filter);
+    }
+    function unsetFilter(key) {
+        _filter[key] = undefined;
         filterChanged(_filter);
     }
 
     function matches(data) {
-        if( _filter.length === 0 ) return true; // no filter, then it's fine
+        if( !_filter ) return true; // no filter, then it's fine
         if( !data ) return false;              // no data, no match
 
-        if( data.title ) {
-            try {
-                return ( 0 <= data.title.search(_filter) );
+        var doesMatch = true;
+        for( var filterKey in _filter ) {
+            if( _filter[filterKey] && data[filterKey] ) {
+                try {
+                    doesMatch = doesMatch && ( 0 <= data[filterKey].search(_filter[filterKey]) );
+                }
+                catch(e) { } // avoid "Invalid regular expression" spamming when user types in his filter
             }
-            catch(e) { } // avoid "Invalid regular expression" spamming when user types in his filter
         }
 
-        return false;
+        return doesMatch;
     }
 
     ///// private
-    property string _filter: "";
+    property var _filter; // each { key, value } pair is a filtering set
 }

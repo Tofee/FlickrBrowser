@@ -42,7 +42,12 @@ Item {
             onCurrentItemChanged: {
                 propertiesLoader.active = false; // force unload
                 if( !currentItem ) return;
-                if( currentItem.type === "collection" )
+                if( currentItem.pageModelType === "RootView" )
+                {
+                    propertiesLoader.currentItemId = "";
+                    propertiesLoader.source = "PropertiesRootView.qml";
+                }
+                else if( currentItem.type === "collection" )
                 {
                     propertiesLoader.currentItemId = currentItem.id;
                     propertiesLoader.source = "PropertiesCollection.qml";

@@ -10,6 +10,7 @@ Item {
     property alias isFilterPanelActive: filterButton.checked
     property alias isPropertiesPanelActive: propertiesButton.checked
     property alias isEditionPanelActive: editionButton.checked
+    property bool isMapActive: false // binding overloaded by MainView with the visibility of the map
 
     Column {
         id: buttonsColumn
@@ -74,6 +75,10 @@ Item {
                     anchors { left: parent.left; right: parent.right }
                 }
             }
+        }
+        MapPanel {
+            visible: isMapActive
+            anchors { left: parent.left; right: parent.right; bottom: parent.bottom }
         }
     }
 }

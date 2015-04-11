@@ -99,7 +99,7 @@ BrowserPage {
             Utils.FlowListDelegate {
                 id: delegateItem
 
-                imageSource: primary_photo_extras.url_s
+                imageSource: primary_photo_extras.url_s || ""
                 textContent: title._content + "(" + String(parseInt(photos)+parseInt(videos)) + ")";
 
                 imageHeight: 180
