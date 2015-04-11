@@ -18,7 +18,7 @@ Item {
         TextField {
             Layout.fillWidth: true;
 
-            onTextChanged: FlickrBrowserApp.contextualFilter.setFilter(text);
+            onTextChanged: FlickrBrowserApp.contextualFilter.setFilter("title", text);
         }
     }
 }

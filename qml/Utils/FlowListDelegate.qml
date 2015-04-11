@@ -31,7 +31,7 @@ Item {
         }
     }
     Component.onCompleted: {
-        delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.title });
+        delegateItem.visible = FlickrBrowserApp.contextualFilter.matches({ "title": delegateItem.textContent });
     }
 
     Column {
