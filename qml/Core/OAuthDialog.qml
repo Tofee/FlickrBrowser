@@ -1,6 +1,10 @@
-import QtQuick 2.0
+import QtQuick 2.1
+import QtWebEngine 1.0
 import QtQuick.Controls 1.1
-import QtWebKit 3.0
+// import QtWebKit 3.0
+// import QtWebKit.experimental 1.0
+
+
 import "OAuthCore.js" as OAuth
 import "DBAccess.js" as DBAccess
 
@@ -17,6 +21,7 @@ Item {
     signal authorized()
 
     state: "undefined"
+    onStateChanged: console.log("state changed: " + dialog.state);
 
     onCheckToken: {
         dialog.state = "checkToken"
@@ -28,14 +33,14 @@ Item {
             }
             else {
                 console.log("No token found. Requesting new token.");
-                dialog.signout();
+                dialog.needNewToken();
             }
         });
     }
 
     onSignout: {
         dialog.state = "signout";
-        webViewSignout.url = "https://www.flickr.com/logout.gne";
+        webViewSignin.url = "https://www.flickr.com/logout.gne";
     }
 
     onNeedNewToken: {
@@ -70,33 +75,22 @@ Item {
         boundsBehavior: Flickable.DragOverBounds
         clip: true
 
-        WebView {
+        WebEngineView {
             id: webViewSignin
 
             width: 800
             height: 1280
 
-            visible: dialog.state === "needNewToken"
+            visible: dialog.state === "needNewToken" || dialog.state === "signout"
             opacity:(webViewSignin.progress < 1) ? 0 : 1
             onUrlChanged: {
                 console.log(webViewSignin.url.toString());
-                checkUrlForToken();
-            }
-
-            Behavior on opacity { PropertyAnimation { properties: "opacity"; duration: 500 } }
-        }
-        WebView {
-            id: webViewSignout
-
-            width: 800
-            height: 1280
-
-            visible: dialog.state === "signout"
-
-            opacity:(webViewSignout.progress < 1) ? 0 : 1
-            onUrlChanged: {
-                console.log(webViewSignout.url.toString());
-                dialog.needNewToken();
+                if( dialog.state === "needNewToken" ) {
+                    checkUrlForToken();
+                }
+                else if( dialog.state === "signout" ) {
+                    dialog.needNewToken();
+                }
             }
 
             Behavior on opacity { PropertyAnimation { properties: "opacity"; duration: 500 } }
