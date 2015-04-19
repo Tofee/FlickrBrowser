@@ -58,6 +58,9 @@ Item {
     /*------ Contextual filter -------*/
     property alias contextualFilter: _contextualFilter
 
+    /*-------Current map target-------*/
+    property variant currentTargetOnMap;
+
     /*------ Flickr API call -------*/
     signal flickrActionLaunched(QtObject reply);
 
