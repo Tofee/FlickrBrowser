@@ -152,12 +152,17 @@ Item {
             }
         }
 
+        Timer {
+            id: refreshModelTimer
+            interval: 500; repeat: false; running: false
+            onTriggered: refreshModel();
+        }
         Connections {
             target: map.gesture
-            onFlickFinished: refreshModel();
-            onPanFinished: refreshModel();
+            onFlickFinished: refreshModelTimer.restart();
+            onPanFinished: refreshModelTimer.restart();
         }
-        onZoomLevelChanged: refreshModel();
+        onZoomLevelChanged: refreshModelTimer.restart();
 
         function getLonLatBBox() {
             var start = map.toCoordinate(Qt.point(0,0));
