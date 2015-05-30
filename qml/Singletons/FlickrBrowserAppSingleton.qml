@@ -61,6 +61,9 @@ Item {
     /*-------Current map target-------*/
     property variant currentTargetOnMap;
 
+    /*-------Current map target-------*/
+    property string localPhotoFolderRoot;
+
     /*------ Flickr API call -------*/
     signal flickrActionLaunched(QtObject reply);
 

@@ -98,8 +98,12 @@ Item {
                                     fullConfig = JSON.parse(xhr.responseText);
                                 }
 
-                                if( fullConfig && fullConfig.consumerKey && fullConfig.consumerSecret ) {
+                                if( fullConfig &&
+                                    fullConfig.consumerKey && fullConfig.consumerSecret &&
+                                    fullConfig.localPhotoFolderRoot ) {
+
                                     OAuth.setConsumerKey(fullConfig.consumerKey, fullConfig.consumerSecret);
+                                    FlickrBrowserApp.localPhotoFolderRoot = fullConfig.localPhotoFolderRoot;
 
                                     flickrBrowserRoot.initialized();
                                 }
