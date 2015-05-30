@@ -13,6 +13,14 @@ Item {
     width: 900
     height: 550
 
+    signal initialized();
+    onInitialized: state = "login";
+
+    Component.onCompleted: {
+        console.log("INFO: hasExtendedFlickrPlugins = " + (typeof hasExtendedFlickrPlugins !== 'undefined'));
+        state = "initialize";
+    }
+
 /*
     HoverMenu {
         id: bottomHoverMenu
@@ -76,6 +84,39 @@ Item {
 
     states: [
         State {
+            name: "initialize"
+            StateChangeScript {
+                script: {
+                        // Read the configuation file
+                        var xhr = new XMLHttpRequest;
+                        var configFilePath = Qt.resolvedUrl("../config/flickr-browser-config.json");
+                        xhr.open("GET", configFilePath);
+                        xhr.onreadystatechange = function() {
+                            if( xhr.readyState === XMLHttpRequest.DONE ) {
+                                var fullConfig = {};
+                                if( xhr.responseText ) {
+                                    fullConfig = JSON.parse(xhr.responseText);
+                                }
+
+                                if( fullConfig && fullConfig.consumerKey && fullConfig.consumerSecret ) {
+                                    OAuth.setConsumerKey(fullConfig.consumerKey, fullConfig.consumerSecret);
+
+                                    flickrBrowserRoot.initialized();
+                                }
+                                else {
+                                    console.log("Couldn't read consumer key and secret from " + configFilePath);
+                                    console.log("Config file content: " + xhr.responseText);
+                                    console.log("Parsed config content: " + JSON.stringify(fullConfig));
+
+                                    Qt.quit();
+                                }
+                            }
+                        }
+                        xhr.send();
+                }
+            }
+        },
+        State {
             name: "login"
             PropertyChanges { target: loginLoader; sourceComponent: loginPageComp }
         },
@@ -89,8 +130,6 @@ Item {
             }
         }
     ]
-
-    Component.onCompleted: state = "login";
 
     Rectangle {
         id: bg

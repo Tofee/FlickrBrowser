@@ -1,5 +1,6 @@
 /****************************************************************************
 **
+** Copyright (C) 2015 Christophe Chapuis <chris.chapuis@ŋmail.com>
 ** Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
@@ -39,7 +40,19 @@
 **
 ****************************************************************************/
 
+.pragma library
+
 Qt.include("sha1.js");
+
+// FlickrBrowser API keys (to be requested from Flickr by the user/developper of FlickrBrowser)
+var consumer_key = "";
+var consumer_secret = "";
+
+function setConsumerKey(consumerKey, consumerSecret)
+{
+    consumer_key = consumerKey;
+    consumer_secret = consumerSecret;
+}
 
 function getValidator(resource, password)
 {
@@ -80,10 +93,6 @@ function url_encode(string) {
 
 function createOAuthHeader(site, type, url, credentials, authParameters, parameters, body)
 {
-    // FlickrBrowser API keys
-    var consumer_key = "a1c5db5c8eca7c23e3b8e8ac825e4225";
-    var consumer_secret = "ad935d350269787a";
-
     var timestamp =  getTimestamp();
     var nonce = getNonce();
 
