@@ -3,10 +3,15 @@
 
 #include <qqml.h>
 
+static QObject *flickrservices_callback(QQmlEngine *e, QJSEngine *)
+{
+    return FlickrServices::instance();
+}
+
 void FlickrServicesPlugin::registerTypes(const char *uri)
 {
     // @uri org.flickrbrowser.services
-    qmlRegisterUncreatableType<FlickrServices>(uri, 1, 0, "FlickrServices", QString("FlickrServices can't be created in QML"));
+    qmlRegisterSingletonType<FlickrServices>(uri, 1, 0, "FlickrServices", flickrservices_callback);
 }
 
 

@@ -6,11 +6,17 @@
 class FlickrServices : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(FlickrServices)
+
+public:
+    static FlickrServices* instance()
+    {
+        static FlickrServices* instance = new FlickrServices;
+        return instance;
+    }
 
     Q_INVOKABLE qreal sizeToPixels(const QString &size);
 
-public:
+protected:
     FlickrServices(QObject *parent = 0);
     ~FlickrServices();
 };

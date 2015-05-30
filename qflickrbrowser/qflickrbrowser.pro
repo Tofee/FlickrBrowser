@@ -9,7 +9,7 @@ QML_IMPORT_PATH = "../qml/"
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp
 
-QT += network qml quick
+QT += network qml quick webenginewidgets webengine
 
 # Installation path
 # target.path =

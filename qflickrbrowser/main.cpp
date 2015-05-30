@@ -1,6 +1,7 @@
 #include <QtGui/QGuiApplication>
 #include <QNetworkProxy>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 //    engine.addImportPath("qml/");
+    engine.rootContext()->setContextProperty("hasExtendedFlickrPlugins", QVariant(true));
     engine.load(QStringLiteral("qml/FlickrBrowserWindow.qml"));
 
     return app.exec();
