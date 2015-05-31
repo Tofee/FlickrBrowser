@@ -23,8 +23,10 @@ BrowserPage {
             pageModel.clear();
             for( var i = 0; i < folderListModel.count; ++i ) {
                 pageModel.append({
+                                     id: folderListModel.get(i, "filePath"),
                                      filePath: folderListModel.get(i, "filePath"),
-                                     fileName: folderListModel.get(i, "fileName")
+                                     fileName: folderListModel.get(i, "fileName"),
+                                     fileIsDir: folderListModel.get(i, "fileIsDir")
                                  });
             }
         }
@@ -36,13 +38,13 @@ BrowserPage {
         anchors.fill: parent
         id: flowList
 
-        itemType: "collection"
+        itemType: "file"
 
         model: pageModel
         delegate:
             Utils.FlowListDelegate {
 
-                imageSource: filePath
+                imageSource: fileIsDir ? "../images/folder_image.png" : filePath
                 textContent: fileName
 
                 imageFillMode: Image.PreserveAspectFit
@@ -56,18 +58,17 @@ BrowserPage {
                     flowList.selected(index, mouse.modifiers);
                 }
                 onDoubleClicked: {
-                    var stackView = collectionGridPage.Stack.view;
-                    var myModelItem = sortedModel.get(index)
+                    var stackView = localFolderPage.Stack.view;
+                    var myModelItem = pageModel.get(index)
 
-                    if( myModelItem.collection ) {
-                        stackView.navigationPath.push(myModelItem.title);
-                        stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                        properties: {"pageItemId": myModelItem.id}});
+                    stackView.navigationPath.push(myModelItem.fileName);
+                    if( myModelItem.fileIsDir ) {
+                        stackView.push({item: Qt.resolvedUrl("LocalFolderPage.qml"),
+                                        properties: {"folderPath": localFolderPage.folderPath + "/" + myModelItem.fileName }});
                     }
-                    else if( myModelItem.set ) {
-                        stackView.navigationPath.push(myModelItem.title);
-                        stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                        properties: {"pageItemId": myModelItem.id}});
+                    else {
+                        stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
+                                        properties: {"pageItemId": "", "photoUrl": myModelItem.filePath}});
                     }
                 }
             }

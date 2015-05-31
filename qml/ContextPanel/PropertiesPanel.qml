@@ -78,6 +78,11 @@ Item {
                     propertiesLoader.currentItemId = currentItem.pageItemId;
                     propertiesLoader.source = "PropertiesPhoto.qml";
                 }
+                else if( currentItem.type === "file" )
+                {
+                    propertiesLoader.currentItemId = currentItem.id;
+                    propertiesLoader.source = "PropertiesFile.qml";
+                }
                 else
                 {
                     propertiesLoader.source = "";

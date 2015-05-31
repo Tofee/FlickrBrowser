@@ -1,7 +1,17 @@
 TEMPLATE = lib
 TARGET = FlickrServices
-QT += qml quick
+QT += qml quick xml
 CONFIG += qt plugin
+
+win32 {
+    INCLUDEPATH  += $$quote(C:/MinGW/msys/1.0/local/include)
+    LIBS         += $$quote(C:/MinGW/msys/1.0/local/lib/libexiv2.dll.a)
+}
+
+unix {
+    INCLUDEPATH  += /usr/include
+    LIBS         += -L/usr/lib -lexiv2
+}
 
 TARGET = $$qtLibraryTarget($$TARGET)
 uri = org.flickrbrowser.services
@@ -11,11 +21,13 @@ DESTDIR=$$OUT_PWD/../qflickrbrowser/$$replace(uri, \\., /)
 # Input
 SOURCES += \
     flickrservices_plugin.cpp \
-    flickrservices.cpp
+    flickrservices.cpp \
+    uploader.cpp
 
 HEADERS += \
     flickrservices_plugin.h \
-    flickrservices.h
+    flickrservices.h \
+    uploader.h
 
 DISTFILES = qmldir
 

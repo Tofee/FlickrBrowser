@@ -2,6 +2,8 @@
 #define FLICKRSERVICES_H
 
 #include <QObject>
+#include <QVariant>
+#include <QString>
 
 class FlickrServices : public QObject
 {
@@ -14,7 +16,9 @@ public:
         return instance;
     }
 
-    Q_INVOKABLE qreal sizeToPixels(const QString &size);
+    Q_INVOKABLE QVariant getFileProperty(const QString &filePath, const QString &prop);
+
+    Q_INVOKABLE QVariant getExifProperty(const QString &filePath, const QString &prop);
 
 protected:
     FlickrServices(QObject *parent = 0);
