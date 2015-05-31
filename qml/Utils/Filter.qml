@@ -29,6 +29,8 @@ QtObject {
         return doesMatch;
     }
 
+    Component.onCompleted: _filter = {};
+
     ///// private
     property var _filter; // each { key, value } pair is a filtering set
 }

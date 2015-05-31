@@ -1,5 +1,5 @@
 
 TEMPLATE = subdirs
-SUBDIRS =  qflickrbrowser tests
+SUBDIRS =  qflickrbrowser tests FlickrServices/flickrservices.pro
 CONFIG += ordered
 

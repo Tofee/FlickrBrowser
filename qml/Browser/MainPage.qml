@@ -63,6 +63,22 @@ BrowserPage {
                 stackView.push({item: Qt.resolvedUrl("SearchPhotosPage.qml")});
             }
         }
+        // File system collection analyser: only if run with C++ plugins
+        Loader {
+            active: typeof hasExtendedFlickrPlugins !== 'undefined'
+            sourceComponent: Component {
+                CategoryButton {
+                    width: 150; height: 150
+                    iconSource: Qt.resolvedUrl("../images/folder_image.png");
+                    text: "Local Files"
+                    onClicked: {
+                        var stackView = mainPage.Stack.view;
+                        stackView.navigationPath.push(text);
+                        stackView.push({item: Qt.resolvedUrl("LocalFolderPage.qml")});
+                    }
+                }
+            }
+        }
     }
     Flow {
         anchors.fill: parent

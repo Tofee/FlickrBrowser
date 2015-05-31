@@ -1,9 +1,7 @@
 import QtQuick 2.1
-import QtWebEngine 1.0
 import QtQuick.Controls 1.1
-// import QtWebKit 3.0
-// import QtWebKit.experimental 1.0
 
+import QtWebEngine 1.0
 
 import "OAuthCore.js" as OAuth
 import "DBAccess.js" as DBAccess
@@ -95,8 +93,8 @@ Item {
 
             Behavior on opacity { PropertyAnimation { properties: "opacity"; duration: 500 } }
         }
-    }
 
+    }
     /* private section */
 
     property string _flickrRequestToken
