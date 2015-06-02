@@ -1,7 +1,7 @@
 import QtQuick 2.1
 import QtQuick.Controls 1.1
 
-import QtWebEngine 1.0
+import QtWebKit 3.0
 
 import "OAuthCore.js" as OAuth
 import "DBAccess.js" as DBAccess
@@ -73,7 +73,7 @@ Item {
         boundsBehavior: Flickable.DragOverBounds
         clip: true
 
-        WebEngineView {
+        WebView {
             id: webViewSignin
 
             width: 800
