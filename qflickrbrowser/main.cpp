@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     }
 
     QQmlApplicationEngine engine;
-//    engine.addImportPath("qml/");
+    engine.addImportPath(".");
     engine.rootContext()->setContextProperty("hasExtendedFlickrPlugins", QVariant(true));
     engine.load(QStringLiteral("qml/FlickrBrowserWindow.qml"));
 
