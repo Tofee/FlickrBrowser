@@ -18,6 +18,8 @@ Item {
     property string textContent
     property alias textPixelSize: delegateText.font.pixelSize
 
+    property string flickrSyncStatus: "unknown"
+
     property alias hoverEnabled: collectionCellMouseArea.hoverEnabled
     property alias containsMouse: collectionCellMouseArea.containsMouse
 
@@ -53,6 +55,16 @@ Item {
                 color: "blue"
 
                 visible: delegateItem.isSelected
+            }
+            Rectangle {
+                visible: flickrSyncStatus !== "unknown"
+                x: 10; y: 10
+                width: 10; height: width
+                color: (flickrSyncStatus === "onlyLocal") ? "red" :
+                       (flickrSyncStatus === "onlyFlickr") ? "blue" : "green"
+                border.color: "black"
+                border.width: 2
+                radius: width*0.5
             }
         }
         Text {
