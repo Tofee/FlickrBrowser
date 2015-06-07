@@ -79,7 +79,7 @@ BrowserPage {
 
         function getPhotosetInfos(myId) {
             // Find the size of that album
-            for( var i = 0; i <= photosetListModel.count; i++ ) {
+            for( var i = 0; i < photosetListModel.count; i++ ) {
                 if( photosetListModel.get(i).id === myId ) {
                     return photosetListModel.get(i);
                 }
