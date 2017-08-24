@@ -13,7 +13,6 @@ win64 {
 }
 
 unix {
-    INCLUDEPATH  += /usr/include
     LIBS         += -L/usr/lib -lexiv2
 }
 
@@ -48,6 +47,7 @@ unix {
     installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
     qmldir.path = $$installPath
     target.path = $$installPath
+
     INSTALLS += target qmldir
 }
 
