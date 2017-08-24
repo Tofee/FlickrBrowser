@@ -19,7 +19,7 @@ BrowserPage {
 
     onPageItemIdChanged: {
         FlickrBrowserApp.currentSelection.clear();
-        FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": pageItemId, "object": null });
+        FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": pageItemId });
 
         refreshModel();
     }

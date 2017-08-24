@@ -26,6 +26,8 @@ Item {
     signal clicked(variant mouse)
     signal doubleClicked(variant mouse)
 
+    onIsSelectedChanged: console.log("delegateItem.isSelected="+delegateItem.isSelected);
+
     Connections {
         target: FlickrBrowserApp.contextualFilter
         onFilterChanged: {
@@ -42,11 +44,12 @@ Item {
 
         Image {
             id: delegateImage
-            height: 180
             width: 180
+            height: 180
 
             fillMode: Image.PreserveAspectCrop
             source: imageSource
+            sourceSize: Qt.size(delegateImage.width, delegateImage.height);
 
             Rectangle {
                 id: selectionRect

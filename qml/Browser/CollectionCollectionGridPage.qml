@@ -58,6 +58,7 @@ BrowserPage {
         model: sortedModel
         delegate:
             Utils.FlowListDelegate {
+                id: flowListDelegate
 
                 imageSource: (iconlarge && iconlarge[0] !== '/') ? iconlarge : Qt.resolvedUrl("../images/collection_default_l.gif")
                 textContent: getCollectionTitle();
