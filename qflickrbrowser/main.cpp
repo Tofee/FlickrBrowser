@@ -2,10 +2,13 @@
 #include <QNetworkProxy>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QtWebEngine>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    QtWebEngine::initialize();
 
     QNetworkProxyQuery npq(QUrl("http://www.flickr.com"));
     QList<QNetworkProxy> proxyList = QNetworkProxyFactory::systemProxyForQuery(npq);
