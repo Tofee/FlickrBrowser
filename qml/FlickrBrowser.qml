@@ -1,5 +1,9 @@
-import QtQuick 2.0
+import QtQuick 2.9
 import QtQuick.Window 2.1
+
+import QtQuick.Controls 2.2
+
+import Qt.labs.settings 1.0
 
 import "Core/OAuthCore.js" as OAuth
 import "Core/DBAccess.js" as DBAccess
@@ -7,47 +11,67 @@ import "Core/DBAccess.js" as DBAccess
 import "Singletons"
 import "Core"
 
-Item {
+ApplicationWindow {
     id: flickrBrowserRoot
 
     width: 900
     height: 550
 
-    signal initialized();
-    onInitialized: state = "login";
+    color: "black"
 
-    Component.onCompleted: {
-        console.log("INFO: hasExtendedFlickrPlugins = " + (typeof hasExtendedFlickrPlugins !== 'undefined'));
-        state = "initialize";
-    }
+    /*
+        HoverMenu {
+            id: bottomHoverMenu
 
-/*
-    HoverMenu {
-        id: bottomHoverMenu
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
 
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
+            minimunHeight: 10
+            maximunHeight: 50
 
-        minimunHeight: 10
-        maximunHeight: 50
-
-        Rectangle {
-            anchors.fill: parent
-            color: "grey"
-            opacity: 0.2
-
-            MouseArea {
+            Rectangle {
                 anchors.fill: parent
-                onClicked: {
-                    stackView.navigationPath.push("Photosets (all)");
-                    stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                    properties: {"photoSetListModel": rootPhotosetListModel}});
+                color: "grey"
+                opacity: 0.2
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        stackView.navigationPath.push("Photosets (all)");
+                        stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
+                                        properties: {"photoSetListModel": rootPhotosetListModel}});
+                    }
                 }
             }
         }
+    */
+
+    property Settings flickrKeysSettings: Settings {
+        category: "FlickrKeys"
+        property string consumerKey: ""
+        property string consumerSecret: ""
     }
-*/
+    property Settings localFolderSyncSettings: Settings {
+        category: "LocalSync"
+        property string localPhotoFolderRoot: ""
+    }
+
+    // Initial config page
+    Component {
+        id: initialConfigComp
+        InitialConfigPage {
+            consumerKey: flickrBrowserRoot.flickrKeysSettings.consumerKey
+            consumerSecret: flickrBrowserRoot.flickrKeysSettings.consumerSecret
+
+            onSettingsDone: {
+                flickrBrowserRoot.flickrKeysSettings.consumerKey = consumerKey;
+                flickrBrowserRoot.flickrKeysSettings.consumerSecret = consumerSecret;
+
+                initializerItem.setupDone();
+            }
+        }
+    }
 
     // login page
     Component {
@@ -55,7 +79,7 @@ Item {
         LoginPage {
             Component.onCompleted: checkToken();
             onAuthorized: {
-                flickrBrowserRoot.state = "logged";
+                initializerItem.loginDone();
             }
         }
     }
@@ -66,83 +90,74 @@ Item {
         }
     }
 
-    property FlickrReply flickrReplyPhotosetList;
-    Connections {
-        target: flickrReplyPhotosetList
-        onReceived: {
-            FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
-        }
-    }
-    Connections {
-        target: FlickrBrowserApp
-        onLogout: {
-            DBAccess.clearToken();
-            flickrBrowserRoot.state = "login";
-        }
-    }
-
-
-    states: [
-        State {
-            name: "initialize"
-            StateChangeScript {
-                script: {
-                        // Read the configuation file
-                        var xhr = new XMLHttpRequest;
-                        var configFilePath = Qt.resolvedUrl("../config/flickr-browser-config.json");
-                        xhr.open("GET", configFilePath);
-                        xhr.onreadystatechange = function() {
-                            if( xhr.readyState === XMLHttpRequest.DONE ) {
-                                var fullConfig = {};
-                                if( xhr.responseText ) {
-                                    fullConfig = JSON.parse(xhr.responseText);
-                                }
-
-                                if( fullConfig &&
-                                    fullConfig.consumerKey && fullConfig.consumerSecret &&
-                                    fullConfig.localPhotoFolderRoot ) {
-
-                                    OAuth.setConsumerKey(fullConfig.consumerKey, fullConfig.consumerSecret);
-                                    FlickrBrowserApp.localPhotoFolderRoot = fullConfig.localPhotoFolderRoot;
-
-                                    flickrBrowserRoot.initialized();
-                                }
-                                else {
-                                    console.log("Couldn't read consumer key and secret from " + configFilePath);
-                                    console.log("Config file content: " + xhr.responseText);
-                                    console.log("Parsed config content: " + JSON.stringify(fullConfig));
-
-                                    Qt.quit();
-                                }
-                            }
-                        }
-                        xhr.send();
-                }
-            }
-        },
-        State {
-            name: "login"
-            PropertyChanges { target: loginLoader; sourceComponent: loginPageComp }
-        },
-        State {
-            name: "logged"
-            PropertyChanges { target: loginLoader; sourceComponent: rootViewComp }
-            StateChangeScript {
-                script: {
-                    flickrReplyPhotosetList = FlickrBrowserApp.callFlickr("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ]);
-                }
-            }
-        }
-    ]
-
-    Rectangle {
-        id: bg
-        anchors.fill: parent
-        color: "black"
-    }
-
     Loader {
         id: loginLoader
         anchors.fill: parent
+    }
+
+    Item {
+        id: initializerItem
+
+        signal setupDone();
+        signal loginDone();
+
+        Component.onCompleted: {
+            // setup already done ?
+            if(flickrBrowserRoot.flickrKeysSettings.consumerKey &&
+               flickrBrowserRoot.flickrKeysSettings.consumerSecret) {
+                initializerItem.setupDone();
+            } else {
+                initializerItem.state = "setup";
+            }
+        }
+
+        property FlickrReply flickrReplyPhotosetList;
+        Connections {
+            target: initializerItem.flickrReplyPhotosetList
+            onReceived: {
+                FlickrBrowserApp.fillPhotosetListModel(response.photosets.photoset);
+            }
+        }
+        Connections {
+            target: FlickrBrowserApp
+            onLogout: {
+                DBAccess.clearToken();
+                initializerItem.state = "login";
+            }
+        }
+
+        onSetupDone: {
+            // Read the configuation
+            if( flickrKeysSettings.consumerKey && flickrKeysSettings.consumerSecret ) {
+
+                OAuth.setConsumerKey(flickrKeysSettings.consumerKey, flickrKeysSettings.consumerSecret);
+                FlickrBrowserApp.localPhotoFolderRoot = localFolderSyncSettings.localPhotoFolderRoot;
+
+                initializerItem.state = "login";
+            }
+            else {
+                console.log("Couldn't read consumer key and secret from settings");
+            }
+        }
+
+        onLoginDone: {
+            initializerItem.flickrReplyPhotosetList = FlickrBrowserApp.callFlickr("flickr.photosets.getList", [ [ "primary_photo_extras", "url_sq,url_s" ] ]);
+            initializerItem.state = "logged";
+        }
+
+        states: [
+            State {
+                name: "setup"
+                PropertyChanges { target: loginLoader; sourceComponent: initialConfigComp }
+            },
+            State {
+                name: "login"
+                PropertyChanges { target: loginLoader; sourceComponent: loginPageComp }
+            },
+            State {
+                name: "logged"
+                PropertyChanges { target: loginLoader; sourceComponent: rootViewComp }
+            }
+        ]
     }
 }

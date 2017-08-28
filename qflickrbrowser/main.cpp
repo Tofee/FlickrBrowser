@@ -20,8 +20,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.addImportPath(".");
-    engine.rootContext()->setContextProperty("hasExtendedFlickrPlugins", QVariant(true));
-    engine.load(QStringLiteral("qml/FlickrBrowserWindow.qml"));
+    engine.load(QStringLiteral("qml/FlickrBrowser.qml"));
 
     return app.exec();
 }
