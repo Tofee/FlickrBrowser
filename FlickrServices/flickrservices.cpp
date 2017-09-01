@@ -45,8 +45,15 @@ QVariant FlickrServices::getExifProperty(const QString &filePath, const QString 
 {
     QVariant lPropertyValue;
 
+    if( prop == "description" )
+        lPropertyValue = QString();
+    else if( prop == "width" || prop == "height" )
+        lPropertyValue = (int)0;
+    else if( prop == "tagList" )
+        lPropertyValue = QStringList();
+
     QFileInfo lFileInfo(filePath);
-    if( !lFileInfo.isFile() ) return QString();
+    if( !lFileInfo.isFile() ) return lPropertyValue;
 
     std::string stdPath=filePath.toStdString();
     Exiv2::Image::AutoPtr imageExiv2 = Exiv2::ImageFactory::open(stdPath);
@@ -62,6 +69,12 @@ QVariant FlickrServices::getExifProperty(const QString &filePath, const QString 
             Exiv2::ExifData::const_iterator posDescription = exifData.findKey(exifKey);
             if( posDescription != exifData.end() )
                 lPropertyValue = QString::fromStdString(posDescription->toString());
+        }
+        else if( prop == "width" ) {
+            lPropertyValue = imageExiv2->pixelWidth();
+        }
+        else if( prop == "height" ) {
+            lPropertyValue = imageExiv2->pixelHeight();
         }
         else if( prop == "tagList" ) {
             lPropertyValue = QStringList();

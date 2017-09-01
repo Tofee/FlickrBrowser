@@ -6,11 +6,10 @@ QtObject {
     signal selectionChanged(variant selection)
 
     function addToSelection(item) {
-        if( item && item.object && item.object.selected ) return;  // nothing to do
+        if( item && item.selected ) return;  // nothing to do
 
         Priv._selection.push(item);
-        if( item.object )
-            item.object.selected = true; // this may add eventualy a new property to the object
+
         selectionChanged(Priv._selection);
     }
     function removeFromSelection(criterias) {
@@ -25,8 +24,8 @@ QtObject {
                 }
             }
             if( identical ) {
-                if( Priv._selection[i].object )
-                    Priv._selection[i].object.selected = false;
+                if( Priv._selection[i] )
+                    Priv._selection[i].selected = false;
                 Priv._selection.splice(i, 1);
                 nbItemsRemoved++;
             }

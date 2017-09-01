@@ -2,10 +2,13 @@
 #include <QNetworkProxy>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QtWebEngine>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    QtWebEngine::initialize();
 
     QNetworkProxyQuery npq(QUrl("http://www.flickr.com"));
     QList<QNetworkProxy> proxyList = QNetworkProxyFactory::systemProxyForQuery(npq);
@@ -16,9 +19,8 @@ int main(int argc, char *argv[])
     }
 
     QQmlApplicationEngine engine;
-//    engine.addImportPath("qml/");
-    engine.rootContext()->setContextProperty("hasExtendedFlickrPlugins", QVariant(true));
-    engine.load(QStringLiteral("qml/FlickrBrowserWindow.qml"));
+    engine.addImportPath(".");
+    engine.load(QStringLiteral("qml/FlickrBrowser.qml"));
 
     return app.exec();
 }

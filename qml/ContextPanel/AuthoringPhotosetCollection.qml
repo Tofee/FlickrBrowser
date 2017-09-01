@@ -19,6 +19,13 @@ Column {
     AuthoringForm {
         width: parent.width
 
+        buttonText: "(BUGGED) Add Album..."
+        formComponent: FormAddPhotoSetToCollection {}
+        exclusiveGroup: actionExclusiveGroup
+    }
+    AuthoringForm {
+        width: parent.width
+
         buttonText: "Delete album..."
         formComponent: FormRemovePhotoset {}
         exclusiveGroup: actionExclusiveGroup

@@ -5,6 +5,7 @@ import "../Singletons"
 Item {
     property string pageItemId
     property ListModel pageModel
+    property ListModel modelForSelection
     property string pageModelType: "Generic"
 
     signal remoteModelChanged();

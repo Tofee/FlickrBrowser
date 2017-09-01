@@ -18,9 +18,6 @@ BrowserPage {
     property variant photosList: [ pageItemId ];
 
     onPageItemIdChanged: {
-        FlickrBrowserApp.currentSelection.clear();
-        FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": pageItemId, "object": null });
-
         refreshModel();
     }
     onRemoteModelChanged: refreshModel();
@@ -185,8 +182,5 @@ BrowserPage {
         var center = Qt.point(flick.contentX + flick.width/2, flick.contentY + flick.height/2);
         flick.resizeContent(flick.width, flick.height, center);
         flick.returnToBounds();
-    }
-
-    function _getNextPhoto() {
     }
 }

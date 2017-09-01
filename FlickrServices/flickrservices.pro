@@ -4,12 +4,15 @@ QT += qml quick xml
 CONFIG += qt plugin
 
 win32 {
-    INCLUDEPATH  += $$quote(C:/MinGW/msys/1.0/local/include)
-    LIBS         += $$quote(C:/MinGW/msys/1.0/local/lib/libexiv2.dll.a)
+    INCLUDEPATH  += $$quote(../../exiv2/deployed/include)
+    LIBS         += $$quote(../../exiv2/deployed/lib32/exiv2.lib)
+}
+win64 {
+    INCLUDEPATH  += $$quote(../../exiv2/deployed/include)
+    LIBS         += $$quote(../../exiv2/deployed/lib64/exiv2.lib)
 }
 
 unix {
-    INCLUDEPATH  += /usr/include
     LIBS         += -L/usr/lib -lexiv2
 }
 
@@ -44,6 +47,7 @@ unix {
     installPath = $$[QT_INSTALL_QML]/$$replace(uri, \\., /)
     qmldir.path = $$installPath
     target.path = $$installPath
+
     INSTALLS += target qmldir
 }
 

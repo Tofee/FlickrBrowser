@@ -10,6 +10,7 @@ BrowserPage {
 
     pageModel: photosetModel
     pageModelType: "Photoset"
+    modelForSelection: flowList.model
 
     property real spacing : 5;
 
@@ -98,8 +99,10 @@ BrowserPage {
                 imageHeight: height_s * scaling
                 imageWidth: width_s * scaling
                 imageFillMode: Image.PreserveAspectFit
-                isSelected: (sortedModel.get(index).selected) ? true : false
                 textPixelSize: 14
+
+                // little trick here to make it re-evaluate the property each time the selection changes
+                isSelected: { FlickrBrowserApp.currentSelection.selectedIndexes; return FlickrBrowserApp.currentSelection.isSelected(modelForSelection.index(index,0)) }
 
                 showText: false
                 hoverEnabled: true
@@ -144,9 +147,6 @@ BrowserPage {
                     stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
                                     properties: {"pageItemId": id,
                                                  "photosList": sortedModel.getValuesForProperty("id")}});
-
-                    FlickrBrowserApp.currentSelection.clear();
-                    FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": sortedModel.get(index) });
                 }
             }
     }

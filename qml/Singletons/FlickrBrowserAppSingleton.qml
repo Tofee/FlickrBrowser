@@ -1,6 +1,7 @@
 pragma Singleton
 
-import QtQuick 2.0
+import QtQuick 2.6
+import QtQml.Models 2.2
 
 import "../Utils" as Utils
 import "../Core/FlickrAPI.js" as FlickrAPI
@@ -93,8 +94,9 @@ Item {
         id: _tagListModel
     }
 
-    Utils.Selection {
+    ItemSelectionModel {
         id: _currentSelection
+        model: currentShownPage ? currentShownPage.modelForSelection : null
     }
 
     Utils.Filter {

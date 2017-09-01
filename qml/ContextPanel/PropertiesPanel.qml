@@ -13,13 +13,13 @@ Item {
         anchors.right: parent.right
 
         id: selectionLoader
-        sourceComponent: FlickrBrowserApp.currentSelection.count > 1 ? multiSelectionPropertiesComp : simplePropertiesComp
+        sourceComponent: FlickrBrowserApp.currentSelection.selectedIndexes.length > 1 ? multiSelectionPropertiesComp : simplePropertiesComp
     }
     Component {
         id: multiSelectionPropertiesComp
         ColumnLayout {
             Label {
-                text: FlickrBrowserApp.currentSelection.count + " items";
+                text: FlickrBrowserApp.currentSelection.selectedIndexes.length + " items";
             }
         }
     }
@@ -28,8 +28,8 @@ Item {
         Item {
             height: propertiesLoader.height
 
-            property variant currentItem: FlickrBrowserApp.currentSelection.count===1 ?
-                                               FlickrBrowserApp.currentSelection.get(0) :
+            property variant currentItem: FlickrBrowserApp.currentSelection.hasSelection ?
+                                               FlickrBrowserApp.currentSelection.model.get(FlickrBrowserApp.currentSelection.currentIndex.row) :
                                                FlickrBrowserApp.currentShownPage
             Loader {
                 id: propertiesLoader
@@ -42,40 +42,45 @@ Item {
             onCurrentItemChanged: {
                 propertiesLoader.active = false; // force unload
                 if( !currentItem ) return;
-                if( currentItem.pageModelType === "RootView" )
+
+                if( FlickrBrowserApp.currentShownPage.pageModelType === "RootView" )
                 {
-                    propertiesLoader.currentItemId = "";
+                    propertiesLoader.currentItemId = FlickrBrowserApp.currentShownPage.pageItemId;
                     propertiesLoader.source = "PropertiesRootView.qml";
                 }
-                else if( currentItem.type === "collection" )
+                else if( FlickrBrowserApp.currentShownPage.pageModelType === "CollectionCollection" )
                 {
-                    propertiesLoader.currentItemId = currentItem.id;
+                    if( FlickrBrowserApp.currentSelection.hasSelection ) {
+                        propertiesLoader.currentItemId = currentItem.id;
+                    } else {
+                        propertiesLoader.currentItemId = FlickrBrowserApp.currentShownPage.pageItemId;
+                    }
                     propertiesLoader.source = "PropertiesCollection.qml";
                 }
-                else if( currentItem.pageModelType === "CollectionCollection" ||
-                         currentItem.pageModelType === "PhotosetCollection" )
+                else if( FlickrBrowserApp.currentShownPage.pageModelType === "PhotosetCollection" )
                 {
-                    propertiesLoader.currentItemId = currentItem.pageItemId;
-                    propertiesLoader.source = "PropertiesCollection.qml";
+                    if( FlickrBrowserApp.currentSelection.hasSelection ) {
+                        propertiesLoader.currentItemId = currentItem.id;
+                        propertiesLoader.source = "PropertiesSet.qml";
+                    } else {
+                        propertiesLoader.currentItemId = FlickrBrowserApp.currentShownPage.pageItemId;
+                        propertiesLoader.source = "PropertiesCollection.qml";
+                    }
                 }
-                else if( currentItem.type === "set" )
+                else if( FlickrBrowserApp.currentShownPage.pageModelType === "Photoset" )
                 {
-                    propertiesLoader.currentItemId = currentItem.id;
-                    propertiesLoader.source = "PropertiesSet.qml";
+                    if( FlickrBrowserApp.currentSelection.hasSelection ) {
+                        propertiesLoader.currentItemId = currentItem.id;
+                        propertiesLoader.source = "PropertiesPhoto.qml";
+                    } else {
+                        propertiesLoader.currentItemId = FlickrBrowserApp.currentShownPage.pageItemId;
+                        propertiesLoader.source = "PropertiesSet.qml";
+                    }
                 }
-                else if( currentItem.pageModelType === "Photoset" )
+                else if( FlickrBrowserApp.currentShownPage.pageModelType === "Photo" )
                 {
-                    propertiesLoader.currentItemId = currentItem.pageItemId;
-                    propertiesLoader.source = "PropertiesSet.qml";
-                }
-                else if( currentItem.type === "photo" )
-                {
-                    propertiesLoader.currentItemId = currentItem.id;
-                    propertiesLoader.source = "PropertiesPhoto.qml";
-                }
-                else if( currentItem.pageModelType === "Photo" )
-                {
-                    propertiesLoader.currentItemId = currentItem.pageItemId;
+                    // keep the binding, so that prev/next photo works as expected
+                    propertiesLoader.currentItemId = Qt.binding( function() { return FlickrBrowserApp.currentShownPage.pageItemId; } )
                     propertiesLoader.source = "PropertiesPhoto.qml";
                 }
                 else if( currentItem.type === "file" )

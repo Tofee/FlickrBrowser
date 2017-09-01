@@ -65,7 +65,7 @@ Item {
 
     Plugin {
         id: myPlugin
-        name: "osm"
+        preferred: [ "osm" ]
         //specify plugin parameters if necessary
         //PluginParameter {...}
         //PluginParameter {...}

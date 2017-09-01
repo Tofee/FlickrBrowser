@@ -1,4 +1,5 @@
-import QtQuick 2.0
+import QtQuick 2.6
+import QtQml.Models 2.2
 
 import "../Singletons"
 
@@ -15,7 +16,6 @@ Flickable {
     clip: true
     flickableDirection: Flickable.VerticalFlick
 
-    property int _lastSelectionIndex: -1;
     signal selected(int index, variant modifiers);
 
     Flow {
@@ -31,32 +31,25 @@ Flickable {
     }
 
     onSelected: {
-        var nbSelected = FlickrBrowserApp.currentSelection.count;
-        var itemModel = model.get(index);
+        var modelIndex = model.index(index, 0);
         if( modifiers & Qt.ControlModifier ) {
-            if( itemModel.selected ) {
-                FlickrBrowserApp.currentSelection.removeFromSelection({ "type": flickableItem.itemType, "id": itemModel.id });
-            }
-            else {
-                FlickrBrowserApp.currentSelection.addToSelection({ "type": flickableItem.itemType, "id": itemModel.id, "object": itemModel });
-            }
+            FlickrBrowserApp.currentSelection.select(modelIndex, ItemSelectionModel.Toggle);
         }
         else if( modifiers & Qt.ShiftModifier ) {
-            if( _lastSelectionIndex >= 0 && _lastSelectionIndex != index ) {
-                var incr = (_lastSelectionIndex > index) ? -1 : 1;
-                for( var idxSel = _lastSelectionIndex; idxSel !== index+incr; idxSel += incr ) {
-                    FlickrBrowserApp.currentSelection.addToSelection({ "type": flickableItem.itemType, "id": model.get(idxSel).id, "object": model.get(idxSel) });
+            if( FlickrBrowserApp.currentSelection.currentIndex.valid && FlickrBrowserApp.currentSelection.currentIndex !== modelIndex ) {
+                var currentIndexRow = FlickrBrowserApp.currentSelection.currentIndex.row;
+                var selectedIndexRow = modelIndex.row;
+                var incr = (currentIndexRow > selectedIndexRow) ? -1 : 1;
+
+                FlickrBrowserApp.currentSelection.clearSelection();
+                for( var idxSel = currentIndexRow; idxSel !== selectedIndexRow+incr; idxSel += incr ) {
+                    FlickrBrowserApp.currentSelection.select(model.index(idxSel, 0), ItemSelectionModel.Select);
                 }
             }
         }
         else {
-            var wasSelected = itemModel.selected;
-            FlickrBrowserApp.currentSelection.clear();
-            _lastSelectionIndex = -1;
-            if( !wasSelected || nbSelected !== 1 ) {
-                _lastSelectionIndex = index;
-                FlickrBrowserApp.currentSelection.addToSelection({ "type": flickableItem.itemType, "id": itemModel.id, "object": itemModel });
-            }
+            FlickrBrowserApp.currentSelection.select(modelIndex, ItemSelectionModel.ClearAndSelect);
+            FlickrBrowserApp.currentSelection.setCurrentIndex(modelIndex, ItemSelectionModel.Current);
         }
     }
 }

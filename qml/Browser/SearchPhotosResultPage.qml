@@ -10,6 +10,7 @@ BrowserPage {
 
     pageModel: searchPhotosResultModel
     pageModelType: "SearchPhotosResult"
+    modelForSelection: flowList.model
 
     property variant searchParams;
 
@@ -103,8 +104,10 @@ BrowserPage {
                 imageHeight: height_s * scaling
                 imageWidth: width_s * scaling
                 imageFillMode: Image.PreserveAspectFit
-                isSelected: (pageModel.get(index).selected) ? true : false
                 textPixelSize: 14
+
+                // little trick here to make it re-evaluate the property each time the selection changes
+                isSelected: { FlickrBrowserApp.currentSelection.selectedIndexes; return FlickrBrowserApp.currentSelection.isSelected(modelForSelection.index(index,0)) }
 
                 showText: false
                 hoverEnabled: true

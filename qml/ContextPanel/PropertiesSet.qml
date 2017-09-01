@@ -46,10 +46,12 @@ ColumnLayout {
         Layout.preferredWidth: parent.width
         text: "ID : " + currentItemId;
     }
-    Label {
+    TextEdit {
         Layout.preferredWidth: parent.width
         text: "Title : " + title;
         wrapMode: Text.Wrap
+        readOnly: true
+        selectByMouse: true
     }
     Label {
         Layout.preferredWidth: parent.width
