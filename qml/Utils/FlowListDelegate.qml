@@ -26,8 +26,6 @@ Item {
     signal clicked(variant mouse)
     signal doubleClicked(variant mouse)
 
-    onIsSelectedChanged: console.log("delegateItem.isSelected="+delegateItem.isSelected);
-
     Connections {
         target: FlickrBrowserApp.contextualFilter
         onFilterChanged: {

@@ -14,6 +14,7 @@ BrowserPage {
 
     pageModelType: "LocalFolder"
     pageModel: ListModel {}
+    modelForSelection: flowList.model
 
     FolderListModel {
         id: folderListModel
@@ -157,7 +158,8 @@ BrowserPage {
                     }
                 }
 
-                isSelected: (pageModel.get(index).selected) ? true : false
+                // little trick here to make it re-evaluate the property each time the selection changes
+                isSelected: { FlickrBrowserApp.currentSelection.selectedIndexes; return FlickrBrowserApp.currentSelection.isSelected(modelForSelection.index(index,0)) }
 
                 onClicked: {
                     flowList.selected(index, mouse.modifiers);

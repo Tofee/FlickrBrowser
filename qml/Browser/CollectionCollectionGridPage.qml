@@ -10,6 +10,7 @@ BrowserPage {
 
     pageModelType: "CollectionCollection"
     pageModel: ListModel {}
+    modelForSelection: flowList.model
 
     Utils.SortedListModel {
         id: sortedModel
@@ -68,7 +69,8 @@ BrowserPage {
                 imageWidth: 150
                 textPixelSize: 10
 
-                isSelected: (sortedModel.get(index).selected) ? true : false
+                // little trick here to make it re-evaluate the property each time the selection changes
+                isSelected: { FlickrBrowserApp.currentSelection.selectedIndexes; return FlickrBrowserApp.currentSelection.isSelected(modelForSelection.index(index,0)) }
 
                 function getCollectionTitle() {
                     // We have to be careful here:

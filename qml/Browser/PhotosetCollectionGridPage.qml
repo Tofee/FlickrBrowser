@@ -11,6 +11,7 @@ BrowserPage {
     pageModelType: "PhotosetCollection"
     pageModel: ListModel {}
     property ListModel photosetListModel: FlickrBrowserApp.photosetListModel
+    modelForSelection: flowList.model
 
     Utils.SortedListModel {
         id: sortedModel
@@ -105,8 +106,10 @@ BrowserPage {
                 imageHeight: 180
                 imageWidth: 180
                 imageFillMode: Image.PreserveAspectCrop
-                isSelected: (smoothlyFilledModel.get(index).selected) ? true : false
                 textPixelSize: 14
+
+                // little trick here to make it re-evaluate the property each time the selection changes
+                isSelected: { FlickrBrowserApp.currentSelection.selectedIndexes; return FlickrBrowserApp.currentSelection.isSelected(modelForSelection.index(index,0)) }
 
                 onClicked: {
                     flowList.selected(index, mouse.modifiers);
