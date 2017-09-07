@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.1
 
 import "../Core"
@@ -49,23 +49,23 @@ ColumnLayout {
     property string realname: "";
     property string nbPhotos: "n/a"
 
-    Label {
+    Text {
         text: "Current account :";
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "ID : " + userid;
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Username : " + username;
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Real name : " + realname;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Photos : " + nbPhotos;
     }

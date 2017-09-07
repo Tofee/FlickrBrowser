@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.1
 
 import "../Core"
@@ -49,44 +49,44 @@ ColumnLayout {
     property string comments;
     property string tags;
 
-    Label {
+    Text {
         text: "Properties of this photo";
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "ID : " + currentItemId;
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Title : " + title;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Taken : " + dateTaken;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Description : " + description;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Comments : " + comments;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Tags : " + tags;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Creation date : " + creationDate;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Last updated  : " + updateDate;
         wrapMode: Text.Wrap

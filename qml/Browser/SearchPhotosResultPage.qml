@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
 
 import "../Core"
 import "../Singletons"
@@ -147,10 +146,8 @@ BrowserPage {
 
                 onDoubleClicked: {
                     // show full screen photo
-                    var stackView = searchPhotosResultGridPage.Stack.view;
-                    stackView.navigationPath.push(title);
-                    stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                    properties: {"pageItemId": id, "photosList": searchPhotosResultModel.getValuesForProperty("id")}});
+                    searchPhotosResultGridPage.pushNewPage(Qt.resolvedUrl("PhotoPage.qml"), delegateItem.textContent,
+                                                           {"pageItemId": id, "photosList": searchPhotosResultModel.getValuesForProperty("id")});
 
                     FlickrBrowserApp.currentSelection.clear();
                     FlickrBrowserApp.currentSelection.addToSelection({ "type": "photo", "id": id, "object": searchPhotosResultModel.get(index) });

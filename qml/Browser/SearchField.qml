@@ -1,7 +1,6 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.1
-import QtQuick.Controls.Styles 1.1
 
 import "../Utils/DateTimePicker"
 
@@ -19,13 +18,12 @@ RowLayout {
         Layout.alignment: Qt.AlignTop
         text: title
 
-        style: CheckBoxStyle {
-                    label: Text {
-                        text: control.text
-                        color: selected ? "white" : "grey"
-                        font.bold: selected
-                    }
-               }
+        contentItem: Text {
+            text: activeCheckBox.text
+            color: "white"
+            font.bold: activeCheckBox.checked
+            leftPadding: activeCheckBox.indicator.width + activeCheckBox.spacing
+        }
     }
 
     Column {
@@ -38,7 +36,7 @@ RowLayout {
             property string userInput
         }
 
-        Label {
+        Text {
             width: parent.width
             wrapMode: Text.Wrap
             text: documentation

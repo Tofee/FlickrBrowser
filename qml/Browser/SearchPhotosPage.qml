@@ -1,6 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
-import QtQuick.Layouts 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 
 import "../Core"
 import "../Singletons"
@@ -175,9 +174,6 @@ BrowserPage {
             }
         }
 
-        var stackView = searchPhotosPage.Stack.view;
-        stackView.navigationPath.push("Results");
-        stackView.push({item: Qt.resolvedUrl("SearchPhotosResultPage.qml"),
-                        properties: {"searchParams": searchParams}});
+        searchPhotosPage.pushNewPage(Qt.resolvedUrl("SearchPhotosResultPage.qml"), "Results", {"searchParams": searchParams});
     }
 }

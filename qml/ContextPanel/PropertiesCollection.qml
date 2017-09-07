@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.1
 
 import "../Core"
@@ -30,22 +30,22 @@ ColumnLayout {
     property string title;
     property string description;
 
-    Label {
+    Text {
         text: "Properties of this collection";
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "ID : " + currentItemId;
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Title : " + title;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         text: "Content : " + nbChildren + " items";
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Description : " + description;
         wrapMode: Text.Wrap

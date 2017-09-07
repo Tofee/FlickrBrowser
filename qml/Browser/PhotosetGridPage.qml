@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
 
 import "../Core"
 import "../Singletons"
@@ -142,11 +141,8 @@ BrowserPage {
 
                 onDoubleClicked: {
                     // show full screen photo
-                    var stackView = photosetGridPage.Stack.view;
-                    stackView.navigationPath.push(title);
-                    stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                    properties: {"pageItemId": id,
-                                                 "photosList": sortedModel.getValuesForProperty("id")}});
+                    photosetGridPage.pushNewPage(Qt.resolvedUrl("PhotoPage.qml"), delegateItem.textContent,
+                                                 {"pageItemId": id, "photosList": sortedModel.getValuesForProperty("id")});
                 }
             }
     }

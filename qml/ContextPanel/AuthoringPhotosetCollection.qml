@@ -1,6 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
-import QtQuick.Layouts 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 
 import "../Core"
 import "../Singletons"
@@ -8,7 +7,7 @@ import "../Utils"
 
 // Display the properties of a collection of photosets.
 Column {
-    ExclusiveGroup { id: actionExclusiveGroup }
+    ButtonGroup { id: actionExclusiveGroup }
     AuthoringForm {
         width: parent.width
 

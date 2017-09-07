@@ -83,15 +83,16 @@ ApplicationWindow {
             }
         }
     }
-    // main view
+
+    // main view (for touch screens)
     Component {
-        id: rootViewComp
-        MainView {
+        id: mainViewTouchComp
+        MainViewTouch {
         }
     }
 
     Loader {
-        id: loginLoader
+        id: rootLoader
         anchors.fill: parent
     }
 
@@ -148,15 +149,15 @@ ApplicationWindow {
         states: [
             State {
                 name: "setup"
-                PropertyChanges { target: loginLoader; sourceComponent: initialConfigComp }
+                PropertyChanges { target: rootLoader; sourceComponent: initialConfigComp }
             },
             State {
                 name: "login"
-                PropertyChanges { target: loginLoader; sourceComponent: loginPageComp }
+                PropertyChanges { target: rootLoader; sourceComponent: loginPageComp }
             },
             State {
                 name: "logged"
-                PropertyChanges { target: loginLoader; sourceComponent: rootViewComp }
+                PropertyChanges { target: rootLoader; sourceComponent: mainViewTouchComp }
             }
         ]
     }

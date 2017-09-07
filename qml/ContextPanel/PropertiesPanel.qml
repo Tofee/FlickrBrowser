@@ -1,24 +1,21 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
-import QtQuick.Controls.Styles 1.1
-import QtQuick.Layouts 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
+import QtQuick.Layouts 1.3
 
 import "../Singletons"
 
-Item {
+Pane {
     height: selectionLoader.height
 
     Loader {
-        anchors.left: parent.left
-        anchors.right: parent.right
-
         id: selectionLoader
+        width: parent.width
         sourceComponent: FlickrBrowserApp.currentSelection.selectedIndexes.length > 1 ? multiSelectionPropertiesComp : simplePropertiesComp
     }
     Component {
         id: multiSelectionPropertiesComp
         ColumnLayout {
-            Label {
+            Text {
                 text: FlickrBrowserApp.currentSelection.selectedIndexes.length + " items";
             }
         }
@@ -93,16 +90,6 @@ Item {
                     propertiesLoader.source = "";
                 }
                 propertiesLoader.active = true;
-            }
-        }
-    }
-    Component {
-        id: noSelectionPropertiesComp
-        ColumnLayout {
-            Label {
-                text: FlickrBrowserApp.currentShownPage ?
-                          FlickrBrowserApp.currentShownPage.pageModel.count + " items":
-                          "N/A";
             }
         }
     }

@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
 
 import "../Core"
 import "../Singletons"
@@ -93,18 +92,12 @@ BrowserPage {
                     flowList.selected(index, mouse.modifiers);
                 }
                 onDoubleClicked: {
-                    var stackView = collectionGridPage.Stack.view;
                     var myModelItem = sortedModel.get(index)
-
                     if( myModelItem.collection ) {
-                        stackView.navigationPath.push(myModelItem.title);
-                        stackView.push({item: Qt.resolvedUrl("CollectionCollectionGridPage.qml"),
-                                        properties: {"pageItemId": myModelItem.id}});
+                        collectionGridPage.pushNewPage(Qt.resolvedUrl("CollectionCollectionGridPage.qml"), myModelItem.title, {"pageItemId": myModelItem.id});
                     }
                     else if( myModelItem.set ) {
-                        stackView.navigationPath.push(myModelItem.title);
-                        stackView.push({item: Qt.resolvedUrl("PhotosetCollectionGridPage.qml"),
-                                        properties: {"pageItemId": myModelItem.id}});
+                        collectionGridPage.pushNewPage(Qt.resolvedUrl("PhotosetCollectionGridPage.qml"), myModelItem.title, {"pageItemId": myModelItem.id});
                     }
                 }
             }

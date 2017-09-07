@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
 
 import Qt.labs.folderlistmodel 2.1
 
@@ -165,21 +164,18 @@ BrowserPage {
                     flowList.selected(index, mouse.modifiers);
                 }
                 onDoubleClicked: {
-                    var stackView = localFolderPage.Stack.view;
                     var myModelItem = pageModel.get(index)
-
-                    stackView.navigationPath.push(myModelItem.fileName);
                     if( myModelItem.fileIsDir ) {
-                        stackView.push({item: Qt.resolvedUrl("LocalFolderPage.qml"),
-                                        properties: {"folderPath": localFolderPage.folderPath + "/" + myModelItem.fileName }});
+                        localFolderPage.pushNewPage(Qt.resolvedUrl("LocalFolderPage.qml"), myModelItem.fileName,
+                                                    {"folderPath": localFolderPage.folderPath + "/" + myModelItem.fileName });
                     }
                     else {
                         var photoHeight = FlickrServices.getExifProperty(myModelItem.filePath, "height");
                         var photoWidth  = FlickrServices.getExifProperty(myModelItem.filePath, "width");
 
-                        stackView.push({item: Qt.resolvedUrl("PhotoPage.qml"),
-                                        properties: {"pageItemId": "", "photoUrl": myModelItem.filePath,
-                                                     "photoWidth": photoWidth, "photoHeight": photoHeight}});
+                        localFolderPage.pushNewPage(Qt.resolvedUrl("PhotoPage.qml"), myModelItem.fileName,
+                                                    {"pageItemId": "", "photoUrl": myModelItem.filePath,
+                                                     "photoWidth": photoWidth, "photoHeight": photoHeight});
                     }
                 }
 

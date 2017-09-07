@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
 
 import "../Core"
 import "../Singletons"
@@ -116,10 +115,7 @@ BrowserPage {
                 }
                 onDoubleClicked: {
                     // We are opening a photoset album
-                    var stackView = collectionGridPage.Stack.view;
-                    stackView.navigationPath.push(delegateItem.textContent);
-                    stackView.push({item: Qt.resolvedUrl("PhotosetGridPage.qml"),
-                                    properties: {"pageItemId": id}});
+                    collectionGridPage.pushNewPage(Qt.resolvedUrl("PhotosetGridPage.qml"), delegateItem.textContent, {"pageItemId": id});
                 }
             }
     }

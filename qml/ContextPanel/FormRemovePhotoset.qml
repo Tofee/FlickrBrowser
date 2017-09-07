@@ -1,6 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
-import QtQuick.Layouts 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 
 import "AuthoringServices.js" as AuthoringServices
 
@@ -40,7 +39,7 @@ Column {
         removeCollectionSelection();
     }
 
-    Label {
+    Text {
         width: parent.width
         text: "This will permanently remove the selected photoset !"
     }

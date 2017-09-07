@@ -1,5 +1,5 @@
-import QtQuick 2.0
-import QtQuick.Controls 1.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.1
 
 import "../Core"
@@ -39,10 +39,10 @@ ColumnLayout {
     property string creationDate;
     property string updateDate;
 
-    Label {
+    Text {
         text: "Properties of this album";
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "ID : " + currentItemId;
     }
@@ -53,22 +53,22 @@ ColumnLayout {
         readOnly: true
         selectByMouse: true
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Content : " + nbPhotos + " photos " + nbVideos + " videos";
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Description : " + description;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Creation date : " + creationDate;
         wrapMode: Text.Wrap
     }
-    Label {
+    Text {
         Layout.preferredWidth: parent.width
         text: "Last updated  : " + updateDate;
         wrapMode: Text.Wrap

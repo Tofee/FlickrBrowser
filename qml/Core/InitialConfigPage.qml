@@ -10,7 +10,7 @@ Pane {
         width: parent.width
         spacing: 10
 
-        Label {
+        Text {
             width: parent.width
             text: "Please enter consumer key and secret.\nIf you don't have one, visit :\n https://www.flickr.com/services/api/misc.api_keys.html"
         }
