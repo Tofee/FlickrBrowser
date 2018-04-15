@@ -7,6 +7,8 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    QGuiApplication::setApplicationName("QFlickrBrowser");
+    QGuiApplication::setApplicationVersion("0.8");
 
     QtWebEngine::initialize();
 
