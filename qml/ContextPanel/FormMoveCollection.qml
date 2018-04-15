@@ -15,11 +15,12 @@ Column {
 
     function moveCollectionSelection(underColId) {
         // now move the selected collections under that one
-        if( FlickrBrowserApp.currentSelection.count>0 ) {
+        if( FlickrBrowserApp.currentSelection.hasSelection ) {
             var iSel;
-            for( iSel = 0; iSel < FlickrBrowserApp.currentSelection.count; ++iSel ) {
+            var selectedIndices = FlickrBrowserApp.currentSelection.selectedIndexes;
+            for( iSel = 0; iSel < selectedIndices.length; ++iSel ) {
                 var moveArgs = [];
-                moveArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
+                moveArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.model.get(selectedIndices[iSel].row).id ]);
                 moveArgs.push([ "parent_collection_id", underColId ]);
 
                 var flickrReplyMoveCollection = FlickrBrowserApp.callFlickr("flickr.collections.moveCollection", moveArgs);

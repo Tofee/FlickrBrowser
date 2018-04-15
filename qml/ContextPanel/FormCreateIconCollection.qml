@@ -13,11 +13,12 @@ Column {
     signal validateForm();
 
     function createIconCollectionSelection() {
-        if( FlickrBrowserApp.currentSelection.count>0 ) {
+        var currentSelection = FlickrBrowserApp.currentSelection;
+        if( currentSelection.hasSelection ) {
             var iSel;
-            for( iSel = 0; iSel < FlickrBrowserApp.currentSelection.count; ++iSel ) {
+            for( iSel = 0; iSel < currentSelection.selectedIndexes.length; ++iSel ) {
                 var createIconArgs = [];
-                createIconArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
+                createIconArgs.push([ "collection_id", currentSelection.model.get(currentSelection.selectedIndexes[iSel].row).id ]);
 
                 var changedColId = FlickrBrowserApp.currentShownPage.pageItemId;
                 var flickrReplyRemoveCollection = FlickrBrowserApp.callFlickr("flickr.collections.createIcon", createIconArgs);

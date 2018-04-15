@@ -36,14 +36,15 @@ Column {
                 }
 
                 // now move add the selected sets under that one
-                if( newColId.length>0 && FlickrBrowserApp.currentSelection.count>0 ) {
+                if( newColId.length>0 && FlickrBrowserApp.currentSelection.hasSelection ) {
                     var moveSetsArgs = [];
                     moveSetsArgs.push([ "collection_id", newColId ]);
                     var iSel;
                     var listSets = "";
-                    for( iSel = 0; iSel < FlickrBrowserApp.currentSelection.count; ++iSel ) {
+                    var selectedIndices = FlickrBrowserApp.currentSelection.selectedIndexes;
+                    for( iSel = 0; iSel < selectedIndices.length; ++iSel ) {
                         if( iSel > 0 ) listSets += ",";
-                        listSets += FlickrBrowserApp.currentSelection.get(iSel).id;
+                        listSets += FlickrBrowserApp.currentSelection.model.get(selectedIndices[iSel].row).id;
                     }
 
                     moveSetsArgs.push([ "photoset_ids", listSets ]);

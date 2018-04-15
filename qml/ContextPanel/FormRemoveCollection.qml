@@ -16,11 +16,12 @@ Column {
 
     function removeCollectionSelection(recursive) {
         // now move the selected collections under that one
-        if( FlickrBrowserApp.currentSelection.count>0 ) {
+        if( FlickrBrowserApp.currentSelection.hasSelection ) {
             var iSel;
-            for( iSel = 0; iSel < FlickrBrowserApp.currentSelection.count; ++iSel ) {
+            var selectedIndices = FlickrBrowserApp.currentSelection.selectedIndexes;
+            for( iSel = 0; iSel < selectedIndices.length; ++iSel ) {
                 var removeArgs = [];
-                removeArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.get(iSel).id ]);
+                removeArgs.push([ "collection_id", FlickrBrowserApp.currentSelection.model.get(selectedIndices[iSel].row).id ]);
                 removeArgs.push([ "recursive", recursive?"true":"false" ]);
 
                 var flickrReplyRemoveCollection = FlickrBrowserApp.callFlickr("flickr.collections.delete", removeArgs);
