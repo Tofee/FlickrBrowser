@@ -2,7 +2,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 
 Item {
-    height: 30
+    height: 40
 
     ListModel {
         id: navigationElements
@@ -27,6 +27,7 @@ Item {
     }
 
     ListView {
+        id: navigationPathListView
         orientation: ListView.Horizontal
         anchors.fill: parent
         anchors.margins: 3
@@ -38,6 +39,7 @@ Item {
                       id: control
                       enabled: index !== (navigationElements.count-1)
                       text: content
+                      height: navigationPathListView.height
                       //tooltip: "Go back to " + content
                       onClicked: elementClicked(index);
 
