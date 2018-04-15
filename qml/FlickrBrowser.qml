@@ -110,6 +110,7 @@ ApplicationWindow {
             } else {
                 initializerItem.state = "setup";
             }
+            flickrBrowserRoot.show();
         }
 
         property FlickrReply flickrReplyPhotosetList;
