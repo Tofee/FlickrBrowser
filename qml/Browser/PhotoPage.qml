@@ -68,6 +68,7 @@ BrowserPage {
             width: flick.contentWidth
             height:flick.contentHeight
             fillMode: Image.PreserveAspectFit
+            autoTransform: true
         }
 
         PinchArea {

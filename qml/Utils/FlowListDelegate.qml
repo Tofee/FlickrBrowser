@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.6
 
 import "../Singletons"
 
@@ -48,6 +48,7 @@ Item {
             fillMode: Image.PreserveAspectCrop
             source: imageSource
             sourceSize: Qt.size(delegateImage.width, delegateImage.height);
+            autoTransform: true
 
             Rectangle {
                 id: selectionRect
