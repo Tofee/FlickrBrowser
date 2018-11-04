@@ -1,6 +1,8 @@
 #include <QFileInfo>
 #include <QVariant>
 #include <QString>
+#include <QTextStream>
+#include <QFile>
 
 #include <exiv2/exiv2.hpp>
 
@@ -13,6 +15,21 @@ FlickrServices::FlickrServices(QObject *parent):
 
 FlickrServices::~FlickrServices()
 {
+}
+
+bool FlickrServices::writeToFile(const QString &filePath, const QString &str)
+{
+    QFile file(filePath);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return false;
+
+    QTextStream out(&file);
+    out << str << "\n";
+
+    file.close();
+
+    return true;
 }
 
 /*!

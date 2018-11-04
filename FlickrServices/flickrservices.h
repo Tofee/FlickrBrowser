@@ -16,6 +16,8 @@ public:
         return instance;
     }
 
+    Q_INVOKABLE bool writeToFile(const QString &filePath, const QString &str);
+
     Q_INVOKABLE QVariant getFileProperty(const QString &filePath, const QString &prop);
 
     Q_INVOKABLE QVariant getExifProperty(const QString &filePath, const QString &prop);
